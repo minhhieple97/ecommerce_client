@@ -64,7 +64,7 @@ const Cart = ({ history, match }) => {
   return (
     <Spin spinning={loading}>
       <div className="container-fluid">
-        <div className="row">
+        <div className="row pt-4 pr-4 pl-4 pb-2">
           <h4>Cart / {products.length} Product </h4>
         </div>
         <div className="row">
