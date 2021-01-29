@@ -1,0 +1,16 @@
+export const AUTH_START = "AUTH_START";
+export const AUTH_SUCCESS = "AUTH_SUCCESS";
+export const AUTH_LOGOUT = "AUTH_LOGOUT";
+export const AUTH_FAIL = "AUTH_FAIL";
+export const SET_AUTH_REDIRECT_PATH = "SET_AUTH_REDIRECT_PATH";
+export const SEARCH_QUERY = "SEARCH_QUERY";
+export const ADD_TO_CART = "ADD_TO_CART";
+export const INIT_CART = "INIT_CART";
+export const START_CART = "START_CART";
+export const FINISH_CART = "FINISH_CART";
+export const REMOVE_TO_CART = "REMOVE_TO_CART";
+export const EMPTY_CART = "EMPTY_CART";
+export const APPLY_COUPON = "APPLY_COUPON";
+export const UPDATE_TO_CART = "UPDATE_TO_CART";
+export const COD_CHECKOUT = "COD_CHECKOUT";
+export const TOGGLE_SIDE_DRAW = "TOGGLE_SIDE_DRAW";
