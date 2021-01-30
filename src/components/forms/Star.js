@@ -11,6 +11,7 @@ const Star = ({ starClick, numberOfStars }) => {
                 starSpacing="2px"
                 starHoverColor="red"
                 starEmptyColor="red"
+                
             />
             <br />
         </>

@@ -147,7 +147,7 @@ const Shop = () => {
         color,
         shipping,
       });
-    }, 1000);
+    }, 2000);
     return () => clearTimeout(timeout);
   }, [
     text,
@@ -243,14 +243,20 @@ const Shop = () => {
                 <Checkbox
                   checked={allRatings}
                   onChange={handleOnChangeAllRatings}
+                  style={{ marginBottom: "10px" }}
                 >
                   All ratings
                 </Checkbox>
-                <hr />
+                {/* <hr /> */}
+                <br />
                 <Star starClick={handleStarClick} numberOfStars={5}></Star>
+                <br />
                 <Star starClick={handleStarClick} numberOfStars={4}></Star>
+                <br />
                 <Star starClick={handleStarClick} numberOfStars={3}></Star>
+                <br />
                 <Star starClick={handleStarClick} numberOfStars={2}></Star>
+                <br />
                 <Star starClick={handleStarClick} numberOfStars={1}></Star>
               </div>
             </SubMenu>
