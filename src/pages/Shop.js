@@ -39,8 +39,8 @@ const Shop = () => {
   const [shipping, setShipping] = useState("");
   const [star, setStar] = useState("");
   const [sub, setSub] = useState("");
-  const [allRatings, setAllRatings] = useState(true)
-  const [allSubs, setAllSubs] = useState(true)
+  const [allRatings, setAllRatings] = useState(true);
+  const [allSubs, setAllSubs] = useState(true);
   const dispatch = useDispatch();
   const _getProducts = useCallback(
     async (value) => {
@@ -109,20 +109,17 @@ const Shop = () => {
   const handleOnChangeBrand = (e) => {
     const newBrand = e.target.value;
     if (newBrand === brand) {
-      setBrand('');
-    }
-    else {
+      setBrand("");
+    } else {
       setBrand(newBrand);
     }
-
   };
   const handleOnChangeColor = (e) => {
     const newColor = e.target.value;
     if (newColor === color) {
-      setColor('')
-    }
-    else {
-      setColor(newColor)
+      setColor("");
+    } else {
+      setColor(newColor);
     }
   };
   const handleSubOnClick = (s) => {
@@ -150,7 +147,7 @@ const Shop = () => {
         color,
         shipping,
       });
-    }, 1000);
+    }, 2000);
     return () => clearTimeout(timeout);
   }, [
     text,
@@ -165,36 +162,32 @@ const Shop = () => {
   ]);
   const handleStarClick = (num) => {
     setStar(num);
-    setAllRatings(false)
+    setAllRatings(false);
   };
   const handleOnChangeShipping = (e) => {
     const newVal = e.target.value;
     if (newVal === shipping) {
-      setShipping('');
-    }
-    else {
+      setShipping("");
+    } else {
       setShipping(newVal);
     }
   };
   const handleOnChangeAllRatings = (e) => {
     setAllRatings(e.target.checked);
-    if (e.target.checked) setStar("")
-  }
+    if (e.target.checked) setStar("");
+  };
   const handleOnChangeAllSubs = (e) => {
     setAllSubs(e.target.checked);
-    if (e.target.checked) setSub('')
-  }
+    if (e.target.checked) setSub("");
+  };
 
   return (
     <div className="container-fluid">
       <div className="row">
-        <div className="col-md-3 pt-2">
-          <h4>Search/filter menu</h4>
+        <div className="col-md-3 pt-3">
+          <h4 className="pb-2 ml-3">Search/filter menu</h4>
           <hr />
-          <Menu
-            mode="inline"
-            defaultOpenKeys={["1", "2", "3", "4", "5", "6", "7"]}
-          >
+          <Menu mode="inline" defaultOpenKeys={[]}>
             {/* Price Slider */}
             <SubMenu
               key="1"
@@ -247,12 +240,23 @@ const Shop = () => {
               }
             >
               <div className="pr-4 pl-4 pb-2">
-                <Checkbox checked={allRatings} onChange={handleOnChangeAllRatings} >All ratings</Checkbox>
-                <hr />
+                <Checkbox
+                  checked={allRatings}
+                  onChange={handleOnChangeAllRatings}
+                  style={{ marginBottom: "10px" }}
+                >
+                  All ratings
+                </Checkbox>
+                {/* <hr /> */}
+                <br />
                 <Star starClick={handleStarClick} numberOfStars={5}></Star>
+                <br />
                 <Star starClick={handleStarClick} numberOfStars={4}></Star>
+                <br />
                 <Star starClick={handleStarClick} numberOfStars={3}></Star>
+                <br />
                 <Star starClick={handleStarClick} numberOfStars={2}></Star>
+                <br />
                 <Star starClick={handleStarClick} numberOfStars={1}></Star>
               </div>
             </SubMenu>
@@ -267,11 +271,17 @@ const Shop = () => {
               }
             >
               <div
-                // style={{ marginTop: "-10px" }} 
-                className="pl-4 pr-4">
+                // style={{ marginTop: "-10px" }}
+                className="pl-4 pr-4"
+              >
                 {
                   <>
-                    <Checkbox checked={allSubs} onChange={handleOnChangeAllSubs} >All sub categories</Checkbox>
+                    <Checkbox
+                      checked={allSubs}
+                      onChange={handleOnChangeAllSubs}
+                    >
+                      All sub categories
+                    </Checkbox>
                     <hr />
                     <SubsLabel
                       handleOnClick={handleSubOnClick}
@@ -342,23 +352,23 @@ const Shop = () => {
             </SubMenu>
           </Menu>
         </div>
-        <div className="col-md-9 pt-2">
+        <div className="col-md-9 pt-3">
           {loading ? (
             <Spinner></Spinner>
           ) : (
-              <>
-                <h4 className="text-danger">Shop</h4>
-                {products.length < 1 && (
-                  <h4 className="text-center">No products found</h4>
-                )}
-                <div className="row pb-5">
-                  <ProductList products={products}></ProductList>
-                </div>
-              </>
-            )}
+            <>
+              <h4>Products</h4>
+              {products.length < 1 && (
+                <h4 className="text-center">No products found</h4>
+              )}
+              <div className="row pb-5">
+                <ProductList products={products}></ProductList>
+              </div>
+            </>
+          )}
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 

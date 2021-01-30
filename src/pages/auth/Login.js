@@ -3,39 +3,49 @@ import { toast } from "react-toastify";
 import { Button } from "antd";
 import { GoogleOutlined, MailOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { validateEmail } from "../../ultil/validation";
 import { auth } from "../../store/actions";
+import MyLink from "../../components/link/MyLink";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
-  const { loading, _id, error: message, role, loadingGoogle, authRedirect } = useSelector(state => state.user)
+  const {
+    loading,
+    _id,
+    error: message,
+    role,
+    loadingGoogle,
+    authRedirect,
+  } = useSelector((state) => state.user);
   useEffect(() => {
     if (message) {
       toast.error(message);
     }
-  }, [message])
+  }, [message]);
   if (_id) {
     switch (role) {
-      case 'admin':
-        return <Redirect to={authRedirect ? authRedirect : "/admin/dashboard"}></Redirect>
-      case 'subscriber':
-        return <Redirect to={authRedirect ? authRedirect : "/user/history"}></Redirect>
+      case "admin":
+        return (
+          <Redirect
+            to={authRedirect ? authRedirect : "/admin/dashboard"}
+          ></Redirect>
+        );
       default:
-        return <Redirect to="/"></Redirect>
+        return <Redirect to="/"></Redirect>;
     }
   }
   const handleSubmit = async () => {
     const flagEmail = validateEmail(email);
     if (!flagEmail) {
       toast.error("Your email address is not valid, please try again.");
-      return
+      return;
     }
-    dispatch(auth(email, password, false, false, null))
+    dispatch(auth(email, password, false, false, null));
   };
   const handleGoogleLogin = async () => {
-    dispatch(auth(null, null, false, true, null))
+    dispatch(auth(null, null, false, true, null));
   };
 
   const loginForm = () => (
@@ -93,9 +103,12 @@ const Login = () => {
         >
           Login with Goolgle
         </Button>
-        <Link to="/forgot/password" className="float-right text-danger">
-          Forgot Password
-        </Link>
+        <MyLink
+          loading={loading || loadingGoogle}
+          to="/forgot/password"
+          className="float-right text-danger"
+          text="Forgot Password"
+        ></MyLink>
       </div>
     </div>
   );

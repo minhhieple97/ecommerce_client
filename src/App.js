@@ -37,24 +37,24 @@ const SubHome = lazy(() => import("./pages/sub/SubHome"));
 const Shop = lazy(() => import("./pages/Shop"));
 const Cart = lazy(() => import("./pages/Cart"));
 const Checkout = lazy(() => import("./pages/Checkout"));
-const CreateCoupon = lazy(() =>
-  import("./pages/admin/coupon/CreateCoupon")
-);
+const CreateCoupon = lazy(() => import("./pages/admin/coupon/CreateCoupon"));
 const Payment = lazy(() => import("./pages/Payment"));
 const App = () => {
-  console.log(process.env)
+  console.log(process.env);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(authCheckLogin());
   }, [dispatch]);
   return (
-    <Suspense fallback={
-      <div className="col text-center p-5" >
-        __ React Redux EC
-        <LoadingOutlined></LoadingOutlined>
-        MMERCE __
-      </div>
-    } >
+    <Suspense
+      fallback={
+        <div className="col text-center p-5">
+          __ React Redux E-commerce
+          <LoadingOutlined></LoadingOutlined>
+          MMERCE __
+        </div>
+      }
+    >
       <Header></Header>
       <Draw></Draw>
       <ToastContainer></ToastContainer>

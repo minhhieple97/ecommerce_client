@@ -3,7 +3,7 @@ import React from "react";
 const CategoryCheckBox = ({ categories, handleOnChange, categoryIds }) => {
   return categories.map((category) => {
     return (
-      <div key={category._id}>
+      <div style={{ marginTop: "10px" }} key={category._id}>
         <Checkbox
           onChange={handleOnChange}
           className="pb-2 pl-4 pr-4"

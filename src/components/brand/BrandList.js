@@ -1,8 +1,14 @@
 import { Radio } from "antd";
 import React from "react";
+const radioStyle = {
+  display: "block",
+  height: "30px",
+  lineHeight: "30px",
+};
 const BrandList = ({ brands, brand, handleOnChange }) => {
   return brands.map((el) => (
     <Radio
+      style={radioStyle}
       value={el}
       key={el}
       name={el}
@@ -12,6 +18,6 @@ const BrandList = ({ brands, brand, handleOnChange }) => {
     >
       {el}
     </Radio>
-  ))
+  ));
 };
 export default BrandList;

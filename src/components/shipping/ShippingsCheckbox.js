@@ -11,7 +11,7 @@ const ShippingsCheckbox = ({ handleOnChange, shipping }) => {
       >
         Yes
       </Checkbox>
-
+      <br />
       <Checkbox
         className="pb-2 pl-4 pr-4"
         onClick={handleOnChange}
