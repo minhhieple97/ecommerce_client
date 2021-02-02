@@ -22,6 +22,7 @@ const NewArrivals = ({ loading, data, handleOnChange, loadingPaganition }) => {
               page={page}
               totalPages={totalPages}
               handleOnChange={(page) => handleOnChange(page, "ARRIVALS")}
+              simple={false}
             />
           )}
         </nav>

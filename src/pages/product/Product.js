@@ -21,6 +21,7 @@ const Product = ({ match, history }) => {
   const [listRelated, setListRelated] = useState([]);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [star, setStar] = useState(0);
+  const [review, setReview] = useState("");
   const { slug } = match.params;
   const user = useSelector((state) => state.user);
   useEffect(() => {
@@ -40,7 +41,10 @@ const Product = ({ match, history }) => {
               const existingRatingObject = product.ratings.find(
                 (ele) => ele.postedBy.toString() === user._id.toString()
               );
-              existingRatingObject && setStar(existingRatingObject.star);
+              if (existingRatingObject) {
+                setStar(existingRatingObject.star);
+                setReview(existingRatingObject.review);
+              }
             }
             return { ...product };
           });
@@ -66,9 +70,17 @@ const Product = ({ match, history }) => {
   };
   const handleSubmitRating = async () => {
     try {
+      if (review.trim() && (review.length < 5 || review.length > 128)) {
+        toast.warning(
+          "Comments should be at least 5 characters long and must have at most 128 characters."
+        );
+        return;
+      }
       setLoadingSubmit(true);
       setVisible(false);
-      await ratingProduct(user.token, product._id, { star });
+      const body = { star };
+      if (review) body.review = review;
+      await ratingProduct(user.token, product._id, body);
       toast.success("Update rating success.");
       const _getProduct = async () => {
         try {
@@ -81,7 +93,10 @@ const Product = ({ match, history }) => {
                 const existingRatingObject = product.ratings.find(
                   (ele) => ele.postedBy.toString() === user._id.toString()
                 );
-                existingRatingObject && setStar(existingRatingObject.star);
+                if (existingRatingObject) {
+                  setStar(existingRatingObject.star);
+                  setReview(existingRatingObject.review);
+                }
               }
               return { ...product };
             });
@@ -96,7 +111,7 @@ const Product = ({ match, history }) => {
       setLoadingSubmit(false);
       toast.error(
         (error.response && error.response.data) ||
-        "Sorry something went wrong, please try again :(( "
+          "Sorry something went wrong, please try again :(( "
       );
     }
   };
@@ -108,54 +123,57 @@ const Product = ({ match, history }) => {
         toast.success("Added to wishlist");
         setLoadingSubmit(false);
         history.push("/user/wishlist");
-      }
-      else {
+      } else {
         dispatch(setAuthRedirectPath(match.url));
         history.push("/login");
       }
     } catch (error) {
       setLoadingSubmit(false);
-
     }
+  };
+  const handleChangeReview = async (e) => {
+    setReview(e.target.value);
   };
   return (
     <div className="container-fluid">
       {loading ? (
         <Spinner></Spinner>
       ) : (
-          <>
-            <Spin spinning={loadingSubmit}>
-              <div className="row pt-4">
-                <ProductDetail
-                  star={star}
-                  user={user}
-                  handleChangeRating={handleChangeRating}
-                  product={product}
-                  visible={visible}
-                  handleVisible={handleVisible}
-                  handleSubmitRating={handleSubmitRating}
-                  handleAddToWishlist={handleAddToWishlist}
-                ></ProductDetail>
+        <>
+          <Spin spinning={loadingSubmit}>
+            <div className="row pt-4">
+              <ProductDetail
+                star={star}
+                review={review}
+                user={user}
+                handleChangeRating={handleChangeRating}
+                product={product}
+                visible={visible}
+                handleVisible={handleVisible}
+                handleSubmitRating={handleSubmitRating}
+                handleAddToWishlist={handleAddToWishlist}
+                handleChangeReview={handleChangeReview}
+              ></ProductDetail>
+            </div>
+            <div className="row">
+              <div className="col text-center pt-5 pb-5">
+                <hr />
+                <h4>Related products</h4>
+                <hr />
               </div>
-              <div className="row">
-                <div className="col text-center pt-5 pb-5">
-                  <hr />
-                  <h4>Related products</h4>
-                  <hr />
-                </div>
-              </div>
-              <div className="row pb-5">
-                {listRelated.length ? (
-                  <>
-                    <ProductList products={listRelated}></ProductList>
-                  </>
-                ) : (
-                    <div className="text-center col">No Products Found</div>
-                  )}
-              </div>
-            </Spin>
-          </>
-        )}
+            </div>
+            <div className="row pb-5">
+              {listRelated.length ? (
+                <>
+                  <ProductList products={listRelated}></ProductList>
+                </>
+              ) : (
+                <div className="text-center col">No Products Found</div>
+              )}
+            </div>
+          </Spin>
+        </>
+      )}
     </div>
   );
 };

@@ -22,6 +22,7 @@ const BestSellers = ({ loading, data, handleOnChange, loadingPaganition }) => {
               handleOnChange={(page) => handleOnChange(page, "BESTSELLER")}
               page={page}
               totalPages={totalPages}
+              simple={false}
             />
           )}
         </nav>

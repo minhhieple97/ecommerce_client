@@ -11,12 +11,7 @@ const data = [
                 resources (Sketch and Axure), to help people create their product prototypes beautifully and
                 efficiently.
             </p>
-        ),
-        datetime: (
-            <Tooltip title={moment().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss')}>
-                <span>{moment().subtract(1, 'days').fromNow()}</span>
-            </Tooltip>
-        ),
+        )
     },
     {
         author: 'Han Solo',
@@ -27,12 +22,7 @@ const data = [
                 resources (Sketch and Axure), to help people create their product prototypes beautifully and
                 efficiently.
             </p>
-        ),
-        datetime: (
-            <Tooltip title={moment().subtract(2, 'days').format('YYYY-MM-DD HH:mm:ss')}>
-                <span>{moment().subtract(2, 'days').fromNow()}</span>
-            </Tooltip>
-        ),
+        )
     },
 ];
 

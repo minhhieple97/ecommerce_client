@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { addToCart, toggleSideDraw } from "../../store/actions";
 import Editor from "../../components/editor/Editor";
 import Reviews from "../../components/reviews/Reviews";
+import PaginationList from "../../components/PaginationList";
 
 const { TabPane } = Tabs;
 const ProductDetail = ({
@@ -19,11 +20,12 @@ const ProductDetail = ({
   visible,
   handleVisible,
   star,
+  review,
   handleSubmitRating,
   handleAddToWishlist,
+  handleChangeReview
 }) => {
   const { images, title, description, _id, quantity } = product;
-  const [container, setContainer] = useState(null);
   const [tooltip, setTooltip] = useState("Click to add");
   const dispatch = useDispatch();
   const handleAddToCart = () => {
@@ -35,7 +37,6 @@ const ProductDetail = ({
   };
   return (
     <React.Fragment>
-      {/* <div className="scrollable-container" ref={setContainer} ></div> */}
       <div className="col-md-7">
         {images && images.length ? (
           <Carousel showArrows={true} autoPlay infiniteLoop>
@@ -50,26 +51,32 @@ const ProductDetail = ({
             })}
           </Carousel>
         ) : (
-            <Card
-              cover={
-                <img
-                  src="/images/laptop.png"
-                  className="mb-3 card-image"
-                  alt="cover"
-                ></img>
-              }
-            ></Card>
-          )}
+          <Card
+            cover={
+              <img
+                src="/images/laptop.png"
+                className="mb-3 card-image"
+                alt="cover"
+              ></img>
+            }
+          ></Card>
+        )}
         <Tabs type="card">
           <TabPane tab="Description" key="1">
             {description}
           </TabPane>
           <TabPane tab="Reviews" key="2">
-            <div className="scrollable-container" ref={setContainer}>
-              <div className="background">
-                <Affix target={() => container}>
-                  <Reviews></Reviews>
-                </Affix>
+            <div className="container">
+              <div className="row">
+                <Reviews></Reviews>
+              </div>
+              <div className="row" style={{ marginBottom: "20px" }}>
+                <PaginationList
+                  page={1}
+                  totalPages={4}
+                  handleOnChange={() => {}}
+                  simple={true}
+                />
               </div>
             </div>
           </TabPane>
@@ -83,8 +90,8 @@ const ProductDetail = ({
         {product && product.ratings && product.ratings.length > 0 ? (
           <Ratings p={product}></Ratings>
         ) : (
-            <div className="text-center pt-1 pb-3">No rating yet</div>
-          )}
+          <div className="text-center pt-1 pb-3">No rating yet</div>
+        )}
         <Card
           actions={[
             <Tooltip title={tooltip}>
@@ -113,12 +120,7 @@ const ProductDetail = ({
               />
               <Comment
                 content={
-                  <Editor
-                  // onChange={this.handleChange}
-                  // onSubmit={this.handleSubmit}
-                  // submitting={submitting}
-                  // value={value}
-                  />
+                  <Editor onChange={handleChangeReview} value={review} />
                 }
               />
             </RatingModal>,
