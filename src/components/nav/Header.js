@@ -21,6 +21,7 @@ const Header = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const handleClick = (e) => {
+
     setCurrent(e.key);
   };
   const handleLogout = () => {

@@ -1,5 +1,5 @@
 import { HeartOutlined, ShoppingCartOutlined } from "@ant-design/icons";
-import { Card, Tabs, Tooltip } from "antd";
+import { Card, Comment, Tabs, Tooltip, Affix, Button } from "antd";
 import React, { useState } from "react";
 import { Carousel } from "react-responsive-carousel";
 import ProductInfo from "./ProductInfo";
@@ -8,6 +8,9 @@ import RatingModal from "../../components/modal/RatingModal";
 import Ratings from "../../components/Ratings";
 import { useDispatch } from "react-redux";
 import { addToCart, toggleSideDraw } from "../../store/actions";
+import Editor from "../../components/editor/Editor";
+import Reviews from "../../components/reviews/Reviews";
+
 const { TabPane } = Tabs;
 const ProductDetail = ({
   product,
@@ -20,6 +23,7 @@ const ProductDetail = ({
   handleAddToWishlist,
 }) => {
   const { images, title, description, _id, quantity } = product;
+  const [container, setContainer] = useState(null);
   const [tooltip, setTooltip] = useState("Click to add");
   const dispatch = useDispatch();
   const handleAddToCart = () => {
@@ -31,6 +35,7 @@ const ProductDetail = ({
   };
   return (
     <React.Fragment>
+      {/* <div className="scrollable-container" ref={setContainer} ></div> */}
       <div className="col-md-7">
         {images && images.length ? (
           <Carousel showArrows={true} autoPlay infiniteLoop>
@@ -59,7 +64,16 @@ const ProductDetail = ({
           <TabPane tab="Description" key="1">
             {description}
           </TabPane>
-          <TabPane tab="More" key="2">
+          <TabPane tab="Reviews" key="2">
+            <div className="scrollable-container" ref={setContainer}>
+              <div className="background">
+                <Affix target={() => container}>
+                  <Reviews></Reviews>
+                </Affix>
+              </div>
+            </div>
+          </TabPane>
+          <TabPane tab="More" key="3">
             Call use on 0889644797 to learn more about this product.
           </TabPane>
         </Tabs>
@@ -96,6 +110,16 @@ const ProductDetail = ({
                 changeRating={handleChangeRating}
                 numberOfStars={5}
                 name={_id}
+              />
+              <Comment
+                content={
+                  <Editor
+                  // onChange={this.handleChange}
+                  // onSubmit={this.handleSubmit}
+                  // submitting={submitting}
+                  // value={value}
+                  />
+                }
               />
             </RatingModal>,
           ]}
