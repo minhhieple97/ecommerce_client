@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { addToCart, toggleSideDraw } from "../../store/actions";
-import Ratings from "../Ratings";
+import Rating from "../Rating";
 const ProductCard = ({ product }) => {
   const { images, title, description, slug, price } = product;
   const [tooltip, setTooltip] = useState("Click to add");
@@ -20,10 +20,10 @@ const ProductCard = ({ product }) => {
   return (
     <>
       {product && product.ratings && product.ratings.length > 0 ? (
-        <Ratings p={product}></Ratings>
+        <Rating p={product}></Rating>
       ) : (
-          <div className="text-center pt-1 pb-3">No rating yet</div>
-        )}
+        <div className="text-center pt-1 pb-3">No rating yet</div>
+      )}
       <Card
         cover={
           <img

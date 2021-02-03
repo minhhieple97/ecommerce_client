@@ -1,15 +1,15 @@
 import { HeartOutlined, ShoppingCartOutlined } from "@ant-design/icons";
-import { Card, Comment, Tabs, Tooltip } from "antd";
+import { Card, Comment, Spin, Tabs, Tooltip } from "antd";
 import React, { useState } from "react";
 import { Carousel } from "react-responsive-carousel";
 import ProductInfo from "./ProductInfo";
 import StarRating from "react-star-ratings";
 import RatingModal from "../../components/modal/RatingModal";
-import Ratings from "../../components/Ratings";
+import Rating from "../../components/Rating";
 import { useDispatch } from "react-redux";
 import { addToCart, toggleSideDraw } from "../../store/actions";
 import Editor from "../../components/editor/Editor";
-import Reviews from "../../components/reviews/Reviews";
+import Ratings from "../../components/ratings/Ratings";
 import PaginationList from "../../components/PaginationList";
 
 const { TabPane } = Tabs;
@@ -23,7 +23,10 @@ const ProductDetail = ({
   review,
   handleSubmitRating,
   handleAddToWishlist,
-  handleChangeReview
+  handleChangeReview,
+  ratingsData,
+  handlePaginationRatings,
+  loadingRatings,
 }) => {
   const { images, title, description, _id, quantity } = product;
   const [tooltip, setTooltip] = useState("Click to add");
@@ -51,33 +54,35 @@ const ProductDetail = ({
             })}
           </Carousel>
         ) : (
-            <Card
-              cover={
-                <img
-                  src="/images/laptop.png"
-                  className="mb-3 card-image"
-                  alt="cover"
-                ></img>
-              }
-            ></Card>
-          )}
+          <Card
+            cover={
+              <img
+                src="/images/laptop.png"
+                className="mb-3 card-image"
+                alt="cover"
+              ></img>
+            }
+          ></Card>
+        )}
         <Tabs type="card">
           <TabPane tab="Description" key="1">
             {description}
           </TabPane>
           <TabPane tab="Reviews" key="2">
             <div className="container">
-              <div className="row">
-                <Reviews></Reviews>
-              </div>
-              <div className="row" style={{ marginTop: "30px" }}>
-                <PaginationList
-                  page={1}
-                  totalPages={4}
-                  handleOnChange={() => { }}
-                  simple={true}
-                />
-              </div>
+              <Spin spinning={loadingRatings}>
+                <div className="row">
+                  <Ratings content={ratingsData.ratings}></Ratings>
+                </div>
+                <div className="row" style={{ marginTop: "30px" }}>
+                  <PaginationList
+                    page={ratingsData.page}
+                    totalPages={ratingsData.totalPages}
+                    handleOnChange={handlePaginationRatings}
+                    simple={true}
+                  />
+                </div>
+              </Spin>
             </div>
           </TabPane>
           <TabPane tab="More" key="3">
@@ -88,10 +93,10 @@ const ProductDetail = ({
       <div className="col-md-5">
         <h1 className="bg-info p-3">{title}</h1>
         {product && product.ratings && product.ratings.length > 0 ? (
-          <Ratings p={product}></Ratings>
+          <Rating p={product}></Rating>
         ) : (
-            <div className="text-center pt-1 pb-3">No rating yet</div>
-          )}
+          <div className="text-center pt-1 pb-3">No rating yet</div>
+        )}
         <Card
           actions={[
             <Tooltip title={tooltip}>

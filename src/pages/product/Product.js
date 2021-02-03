@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
-import {
-  getProduct,
-  getRelated,
-  ratingProduct,
-} from "../../services/api/product";
+import { getProduct, getRelated } from "../../services/api/product";
 import { INITIAL_STATE_PRODUCT } from "../../ultil/constants";
 import ProductDetail from "./ProductDetail";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,11 +9,23 @@ import { setAuthRedirectPath } from "../../store/actions";
 import { Spin } from "antd";
 import ProductList from "../../components/product/ProductList";
 import { addToWishlist } from "../../services/api/user";
+import {
+  createOrUpdateRating,
+  getCurrentRatingProductOfUser,
+  getListRatingProduct,
+} from "../../services/api/rating";
 const Product = ({ match, history }) => {
   const dispatch = useDispatch();
   const [product, setProduct] = useState({ ...INITIAL_STATE_PRODUCT });
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [loadingRatings, setLoadingRatings] = useState(false);
+  const [ratingsData, setRatingsData] = useState({
+    ratings: [],
+    page: 1,
+    limit: 4,
+    totalPages: 0,
+  });
   const [listRelated, setListRelated] = useState([]);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [star, setStar] = useState(0);
@@ -32,23 +40,33 @@ const Product = ({ match, history }) => {
           getProduct(slug),
           getRelated(slug),
         ]);
+        const { ratings, totalPages, page, limit } = await getListRatingProduct(
+          {
+            productId: product._id,
+          }
+        );
+        setRatingsData({
+          ratings,
+          totalPages,
+          page,
+          limit,
+        });
         if (Object.keys(product).length === 0) {
           history.push("/");
         } else {
-          setLoading(false);
-          setProduct(() => {
-            if (user._id) {
-              const existingRatingObject = product.ratings.find(
-                (ele) => ele.postedBy.toString() === user._id.toString()
-              );
-              if (existingRatingObject) {
-                setStar(existingRatingObject.star);
-                setReview(existingRatingObject.review);
-              }
-            }
-            return { ...product };
-          });
+          setProduct(product);
           setListRelated(listRelated);
+          if (user._id) {
+            const { rating } = await getCurrentRatingProductOfUser(
+              product._id,
+              user.token
+            );
+            if (rating) {
+              setStar(rating.star);
+              setReview(rating.review);
+            }
+          }
+          setLoading(false);
         }
       } catch (error) {
         history.push("/");
@@ -57,6 +75,7 @@ const Product = ({ match, history }) => {
       }
     };
     _getProduct();
+    // eslint-disable-next-line
   }, [slug, history, user._id]);
   const handleChangeRating = (rating) => {
     setStar(rating);
@@ -79,40 +98,27 @@ const Product = ({ match, history }) => {
       }
       setLoadingSubmit(true);
       setVisible(false);
-      const body = { star };
+      const body = { star, productId: product._id };
       if (review) body.review = review;
-      await ratingProduct(user.token, product._id, body);
+      await createOrUpdateRating(user.token, body);
+      setStar(star);
+      setReview(review);
+      const { ratings, totalPages, page, limit } = await getListRatingProduct({
+        productId: product._id,
+      });
+      setRatingsData({
+        ratings,
+        totalPages,
+        page,
+        limit,
+      });
       toast.success("Update rating success.");
-      const _getProduct = async () => {
-        try {
-          const product = await getProduct(slug);
-          if (Object.keys(product).length === 0) {
-            history.push("/");
-          } else {
-            setProduct(() => {
-              if (user._id) {
-                const existingRatingObject = product.ratings.find(
-                  (ele) => ele.postedBy.toString() === user._id.toString()
-                );
-                if (existingRatingObject) {
-                  setStar(existingRatingObject.star);
-                  setReview(existingRatingObject.review);
-                }
-              }
-              return { ...product };
-            });
-          }
-        } catch (error) {
-          console.error(error.message);
-        }
-      };
-      _getProduct();
       setLoadingSubmit(false);
     } catch (error) {
       setLoadingSubmit(false);
       toast.error(
         (error.response && error.response.data) ||
-        "Sorry something went wrong, please try again :(( "
+          "Sorry something went wrong, please try again :(( "
       );
     }
   };
@@ -135,46 +141,63 @@ const Product = ({ match, history }) => {
   const handleChangeReview = async (e) => {
     setReview(e.target.value);
   };
+  const handlePaginationRatings = async (pageUpdate) => {
+    setLoadingRatings(true);
+    const { ratings, totalPages, page, limit } = await getListRatingProduct({
+      productId: product._id,
+      page: pageUpdate,
+    });
+    setRatingsData({
+      ratings,
+      totalPages,
+      page,
+      limit,
+    });
+    setLoadingRatings(false);
+  };
   return (
     <div className="container-fluid">
       {loading ? (
         <Spinner></Spinner>
       ) : (
-          <>
-            <Spin spinning={loadingSubmit}>
-              <div className="row pt-4">
-                <ProductDetail
-                  star={star}
-                  review={review}
-                  user={user}
-                  handleChangeRating={handleChangeRating}
-                  product={product}
-                  visible={visible}
-                  handleVisible={handleVisible}
-                  handleSubmitRating={handleSubmitRating}
-                  handleAddToWishlist={handleAddToWishlist}
-                  handleChangeReview={handleChangeReview}
-                ></ProductDetail>
+        <>
+          <Spin spinning={loadingSubmit}>
+            <div className="row pt-4">
+              <ProductDetail
+                loadingRatings={loadingRatings}
+                ratingsData={ratingsData}
+                handlePaginationRatings={handlePaginationRatings}
+                star={star}
+                review={review}
+                user={user}
+                handleChangeRating={handleChangeRating}
+                product={product}
+                visible={visible}
+                handleVisible={handleVisible}
+                handleSubmitRating={handleSubmitRating}
+                handleAddToWishlist={handleAddToWishlist}
+                handleChangeReview={handleChangeReview}
+              ></ProductDetail>
+            </div>
+            <div className="row">
+              <div className="col text-center pt-5 pb-5">
+                <hr />
+                <h4>Related products</h4>
+                <hr />
               </div>
-              <div className="row">
-                <div className="col text-center pt-5 pb-5">
-                  <hr />
-                  <h4>Related products</h4>
-                  <hr />
-                </div>
-              </div>
-              <div className="row pb-5">
-                {listRelated.length ? (
-                  <>
-                    <ProductList products={listRelated}></ProductList>
-                  </>
-                ) : (
-                    <div className="text-center col">No Products Found</div>
-                  )}
-              </div>
-            </Spin>
-          </>
-        )}
+            </div>
+            <div className="row pb-5">
+              {listRelated.length ? (
+                <>
+                  <ProductList products={listRelated}></ProductList>
+                </>
+              ) : (
+                <div className="text-center col">No Products Found</div>
+              )}
+            </div>
+          </Spin>
+        </>
+      )}
     </div>
   );
 };
