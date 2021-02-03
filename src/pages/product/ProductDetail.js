@@ -1,5 +1,5 @@
 import { HeartOutlined, ShoppingCartOutlined } from "@ant-design/icons";
-import { Card, Comment, Tabs, Tooltip, Affix, Button } from "antd";
+import { Card, Comment, Tabs, Tooltip } from "antd";
 import React, { useState } from "react";
 import { Carousel } from "react-responsive-carousel";
 import ProductInfo from "./ProductInfo";
@@ -51,16 +51,16 @@ const ProductDetail = ({
             })}
           </Carousel>
         ) : (
-          <Card
-            cover={
-              <img
-                src="/images/laptop.png"
-                className="mb-3 card-image"
-                alt="cover"
-              ></img>
-            }
-          ></Card>
-        )}
+            <Card
+              cover={
+                <img
+                  src="/images/laptop.png"
+                  className="mb-3 card-image"
+                  alt="cover"
+                ></img>
+              }
+            ></Card>
+          )}
         <Tabs type="card">
           <TabPane tab="Description" key="1">
             {description}
@@ -70,11 +70,11 @@ const ProductDetail = ({
               <div className="row">
                 <Reviews></Reviews>
               </div>
-              <div className="row" style={{ marginBottom: "20px" }}>
+              <div className="row" style={{ marginTop: "30px" }}>
                 <PaginationList
                   page={1}
                   totalPages={4}
-                  handleOnChange={() => {}}
+                  handleOnChange={() => { }}
                   simple={true}
                 />
               </div>
@@ -90,8 +90,8 @@ const ProductDetail = ({
         {product && product.ratings && product.ratings.length > 0 ? (
           <Ratings p={product}></Ratings>
         ) : (
-          <div className="text-center pt-1 pb-3">No rating yet</div>
-        )}
+            <div className="text-center pt-1 pb-3">No rating yet</div>
+          )}
         <Card
           actions={[
             <Tooltip title={tooltip}>

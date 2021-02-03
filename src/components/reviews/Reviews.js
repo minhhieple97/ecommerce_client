@@ -1,6 +1,6 @@
 
-import { Comment, Tooltip, List } from 'antd';
-import moment from 'moment';
+import { Comment, List } from 'antd';
+import Rate from '../rate/Rate';
 const data = [
     {
         author: 'Han Solo',
@@ -40,6 +40,7 @@ const Reviews = () => {
                     avatar={item.avatar}
                     content={item.content}
                     datetime={item.datetime}
+                    children={<Rate></Rate>}
                 />
             </li>
         )}
