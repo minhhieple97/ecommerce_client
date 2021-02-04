@@ -18,7 +18,7 @@ const Reviews = ({ content }) => {
               <Tooltip
                 title={moment(item.updatedAt).format("HH:mm:ss DD-MM-YYYY")}
               >
-                <span>{moment().subtract(1, "h").fromNow()}</span>
+                <span>{moment(item.updatedAt).fromNow()}</span>
               </Tooltip>
             }
             children={<Rate star={item.star}></Rate>}

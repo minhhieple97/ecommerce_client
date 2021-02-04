@@ -54,16 +54,16 @@ const ProductDetail = ({
             })}
           </Carousel>
         ) : (
-          <Card
-            cover={
-              <img
-                src="/images/laptop.png"
-                className="mb-3 card-image"
-                alt="cover"
-              ></img>
-            }
-          ></Card>
-        )}
+            <Card
+              cover={
+                <img
+                  src="/images/laptop.png"
+                  className="mb-3 card-image"
+                  alt="cover"
+                ></img>
+              }
+            ></Card>
+          )}
         <Tabs type="card">
           <TabPane tab="Description" key="1">
             {description}
@@ -95,8 +95,8 @@ const ProductDetail = ({
         {product && product.ratings && product.ratings.length > 0 ? (
           <Rating p={product}></Rating>
         ) : (
-          <div className="text-center pt-1 pb-3">No rating yet</div>
-        )}
+            <div className="text-center pt-1 pb-3">No rating yet</div>
+          )}
         <Card
           actions={[
             <Tooltip title={tooltip}>
