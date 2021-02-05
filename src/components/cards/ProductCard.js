@@ -19,11 +19,11 @@ const ProductCard = ({ product }) => {
   };
   return (
     <>
-      {product && product.ratings && product.ratings.length > 0 ? (
-        <Rating p={product}></Rating>
+      {product && product.averageStar ? (
+        <Rating average={product.averageStar}></Rating>
       ) : (
-        <div className="text-center pt-1 pb-3">No rating yet</div>
-      )}
+          <div className="text-center pt-1 pb-3">No review yet</div>
+        )}
       <Card
         cover={
           <img

@@ -8,6 +8,9 @@ export const setValueInLocalStorage = () => {
 
 };
 
+export const roundTowDecimal = (num) => {
+  return Math.round((num + Number.EPSILON) * 100) / 100
+}
 
 export const showAverage = (p) => {
   if (p && p.ratings) {

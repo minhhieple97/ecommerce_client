@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
+import { Tag } from 'antd';
 const ProductInfo = ({ product }) => {
   const {
     price,
@@ -26,7 +26,8 @@ const ProductInfo = ({ product }) => {
           to={`/category/${category.slug}`}
           className="label label-default label-pill pull-xs-right"
         >
-          {category.name}
+          <Tag style={{ margin: 0, cursor: "pointer" }} color="gold"> {category.name}</Tag>
+
         </Link>
       </li>
       <li className="list-group-item">
@@ -38,7 +39,7 @@ const ProductInfo = ({ product }) => {
               to={`/sub-category/${sub.slug}`}
               className="label label-default label-pill pull-xs-right"
             >
-              {sub.name}
+              <Tag style={{ cursor: "pointer", margin: 0 }} color="purple">{sub.name}</Tag>
             </Link>
           );
         })}

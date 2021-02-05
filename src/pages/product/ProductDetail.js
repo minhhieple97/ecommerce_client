@@ -15,6 +15,7 @@ import PaginationList from "../../components/PaginationList";
 const { TabPane } = Tabs;
 const ProductDetail = ({
   product,
+  average,
   handleChangeRating,
   user,
   visible,
@@ -29,6 +30,7 @@ const ProductDetail = ({
   loadingRatings,
 }) => {
   const { images, title, description, _id, quantity } = product;
+  const { ratings, page, totalPages } = ratingsData;
   const [tooltip, setTooltip] = useState("Click to add");
   const dispatch = useDispatch();
   const handleAddToCart = () => {
@@ -64,25 +66,25 @@ const ProductDetail = ({
               }
             ></Card>
           )}
-        <Tabs type="card">
+        <Tabs type="card" defaultActiveKey="2">
           <TabPane tab="Description" key="1">
             {description}
           </TabPane>
           <TabPane tab="Reviews" key="2">
             <div className="container">
-              <Spin spinning={loadingRatings}>
+              {ratings && ratings.length > 0 ? <Spin spinning={loadingRatings}>
                 <div className="row">
-                  <Ratings content={ratingsData.ratings}></Ratings>
+                  <Ratings content={ratings}></Ratings>
                 </div>
                 <div className="row" style={{ marginTop: "30px" }}>
                   <PaginationList
-                    page={ratingsData.page}
-                    totalPages={ratingsData.totalPages}
+                    page={page}
+                    totalPages={totalPages}
                     handleOnChange={handlePaginationRatings}
                     simple={true}
                   />
                 </div>
-              </Spin>
+              </Spin> : <p>This product has no reviews yet.</p>}
             </div>
           </TabPane>
           <TabPane tab="More" key="3">
@@ -92,10 +94,10 @@ const ProductDetail = ({
       </div>
       <div className="col-md-5">
         <h1 className="bg-info p-3">{title}</h1>
-        {product && product.ratings && product.ratings.length > 0 ? (
-          <Rating p={product}></Rating>
+        {average ? (
+          <Rating average={average}></Rating>
         ) : (
-            <div className="text-center pt-1 pb-3">No rating yet</div>
+            <div className="text-center pt-1 pb-3">No review yet</div>
           )}
         <Card
           actions={[

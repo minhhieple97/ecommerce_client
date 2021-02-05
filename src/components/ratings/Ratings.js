@@ -5,7 +5,7 @@ const Reviews = ({ content }) => {
   return (
     <List
       className="comment-list"
-      header={`${content.length} comments`}
+      header={`The product has ${content.length} reviews.`}
       itemLayout="horizontal"
       dataSource={content}
       renderItem={(item) => (

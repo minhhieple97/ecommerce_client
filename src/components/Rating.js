@@ -1,7 +1,7 @@
 import React from "react";
 import StarRating from "react-star-ratings";
-import { showAverage } from "../ultil/helper";
-const Rating = ({ p }) => {
+import { roundTowDecimal } from "../ultil/helper";
+const Rating = ({ average }) => {
   return (
     <div className="text-center pt-1 pb-3">
       <span>
@@ -9,10 +9,10 @@ const Rating = ({ p }) => {
           starDimension="20px"
           starSpacing="2px"
           starRatedColor="red"
-          rating={showAverage(p)}
+          rating={average}
           editing={false}
         ></StarRating>{" "}
-        ({p.ratings.length})
+        ({roundTowDecimal(average)})
       </span>
     </div>
   );

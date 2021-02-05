@@ -19,6 +19,7 @@ const Product = ({ match, history }) => {
   const [product, setProduct] = useState({ ...INITIAL_STATE_PRODUCT });
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [average, setAverage] = useState(null)
   const [loadingRatings, setLoadingRatings] = useState(false);
   const [ratingsData, setRatingsData] = useState({
     ratings: [],
@@ -55,6 +56,7 @@ const Product = ({ match, history }) => {
           history.push("/");
         } else {
           setProduct(product);
+          if (product.averageStar) setAverage(product.averageStar)
           setListRelated(listRelated);
           if (user._id) {
             const { rating } = await getCurrentRatingProductOfUser(
@@ -90,6 +92,7 @@ const Product = ({ match, history }) => {
   };
   const handleSubmitRating = async () => {
     try {
+      console.log("OK")
       if (review.trim() && (review.length < 5 || review.length > 128)) {
         toast.warning(
           "Comments should be at least 5 characters long and must have at most 128 characters."
@@ -100,9 +103,11 @@ const Product = ({ match, history }) => {
       setVisible(false);
       const body = { star, productId: product._id };
       if (review) body.review = review;
-      await createOrUpdateRating(user.token, body);
+      const { average } = await createOrUpdateRating(user.token, body);
       setStar(star);
+      console.log({ average })
       setReview(review);
+      setAverage(average);
       const { ratings, totalPages, page, limit } = await getListRatingProduct({
         productId: product._id,
       });
@@ -118,7 +123,7 @@ const Product = ({ match, history }) => {
       setLoadingSubmit(false);
       toast.error(
         (error.response && error.response.data) ||
-          "Sorry something went wrong, please try again :(( "
+        "Sorry something went wrong, please try again :(( "
       );
     }
   };
@@ -160,44 +165,45 @@ const Product = ({ match, history }) => {
       {loading ? (
         <Spinner></Spinner>
       ) : (
-        <>
-          <Spin spinning={loadingSubmit}>
-            <div className="row pt-4">
-              <ProductDetail
-                loadingRatings={loadingRatings}
-                ratingsData={ratingsData}
-                handlePaginationRatings={handlePaginationRatings}
-                star={star}
-                review={review}
-                user={user}
-                handleChangeRating={handleChangeRating}
-                product={product}
-                visible={visible}
-                handleVisible={handleVisible}
-                handleSubmitRating={handleSubmitRating}
-                handleAddToWishlist={handleAddToWishlist}
-                handleChangeReview={handleChangeReview}
-              ></ProductDetail>
-            </div>
-            <div className="row">
-              <div className="col text-center pt-5 pb-5">
-                <hr />
-                <h4>Related products</h4>
-                <hr />
+          <>
+            <Spin spinning={loadingSubmit}>
+              <div className="row pt-4">
+                <ProductDetail
+                  average={average}
+                  loadingRatings={loadingRatings}
+                  ratingsData={ratingsData}
+                  handlePaginationRatings={handlePaginationRatings}
+                  star={star}
+                  review={review}
+                  user={user}
+                  handleChangeRating={handleChangeRating}
+                  product={product}
+                  visible={visible}
+                  handleVisible={handleVisible}
+                  handleSubmitRating={handleSubmitRating}
+                  handleAddToWishlist={handleAddToWishlist}
+                  handleChangeReview={handleChangeReview}
+                ></ProductDetail>
               </div>
-            </div>
-            <div className="row pb-5">
-              {listRelated.length ? (
-                <>
-                  <ProductList products={listRelated}></ProductList>
-                </>
-              ) : (
-                <div className="text-center col">No Products Found</div>
-              )}
-            </div>
-          </Spin>
-        </>
-      )}
+              <div className="row">
+                <div className="col text-center pt-5 pb-5">
+                  <hr />
+                  <h4>Related products</h4>
+                  <hr />
+                </div>
+              </div>
+              <div className="row pb-5">
+                {listRelated.length ? (
+                  <>
+                    <ProductList products={listRelated}></ProductList>
+                  </>
+                ) : (
+                    <div className="text-center col">No Products Found</div>
+                  )}
+              </div>
+            </Spin>
+          </>
+        )}
     </div>
   );
 };
