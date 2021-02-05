@@ -92,9 +92,11 @@ const Wishlist = () => {
   // );
   return <div className="container-fluid" >
     {
+
       loading ? <Spinner></Spinner> : <Spin spinning={loadingSubmit} >
         <div className="row" >
           <div className="col-md-2" >
+            {false && showWishlist()}
             <UserNav></UserNav>
           </div>
           <div className="col-md-10" >
