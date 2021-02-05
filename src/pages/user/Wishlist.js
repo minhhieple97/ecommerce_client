@@ -1,5 +1,6 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Spin } from "antd";
+import { Card, Spin } from "antd";
+import { Table, Button } from 'antd';
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -8,31 +9,47 @@ import Spinner from "../../components/Spinner";
 import { getWishlist, removeWishlist } from "../../services/api/user";
 import { List, Avatar, Space } from 'antd';
 import { MessageOutlined, LikeOutlined, StarOutlined } from '@ant-design/icons';
-const listData = [];
-for (let i = 0; i < 23; i++) {
-  listData.push({
-    href: 'https://ant.design',
-    title: `ant design part ${i}`,
-    avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-    description:
-      'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-    content:
-      'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
+
+
+const columns = [
+  {
+    title: 'Title',
+    dataIndex: 'title',
+  },
+  {
+    title: 'Price',
+    dataIndex: 'price',
+  },
+  {
+    title: 'Brand',
+    dataIndex: 'brand',
+  },
+  {
+    title: 'Color',
+    dataIndex: 'color',
+  },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+  },
+];
+const data = [];
+for (let i = 0; i < 46; i++) {
+  data.push({
+    key: i,
+    name: `Edward King ${i}`,
+    age: 32,
+    address: `London, Park Lane no. ${i}`,
   });
 }
-
-const IconText = ({ icon, text }) => (
-  <Space>
-    {React.createElement(icon)}
-    {text}
-  </Space>
-);
 
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);
   const user = useSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const hasSelected = selectedRowKeys.length > 0;
   const _getWishlist = useCallback(async () => {
     try {
       const { userWishlist } = await getWishlist(user.token);
@@ -90,6 +107,11 @@ const Wishlist = () => {
   //       )}
   //   </div>
   // );
+  const onSelectChange = selectedRowKeys => {
+    console.log('selectedRowKeys changed: ', selectedRowKeys);
+    setSelectedRowKeys(selectedRowKeys);
+  };
+
   return <div className="container-fluid" >
     {
       loading ? <Spinner></Spinner> : <Spin spinning={loadingSubmit} >
@@ -98,44 +120,18 @@ const Wishlist = () => {
             <UserNav></UserNav>
           </div>
           <div className="col-md-10" >
-            <List
-              itemLayout="vertical"
-              size="large"
-              pagination={{
-                onChange: page => {
-                  console.log(page);
-                },
-                pageSize: 3,
+            <Card style={{ marginTop: "10px" }} >
+              <div style={{ marginBottom: 16 }}>
+                <Button type="primary" disabled={!hasSelected} loading={loading}>
+                  Remove
+          </Button>
+                <span style={{ marginLeft: 8 }}>
+                  {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+                </span>
+              </div>
+              <Table rowSelection={{ selectedRowKeys, onChange: onSelectChange }} columns={columns} dataSource={wishlist} />
+            </Card>
 
-              }}
-              load
-              dataSource={listData}
-              renderItem={item => (
-                <List.Item
-                  key={item.title}
-                  actions={[
-                    <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
-                    <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
-                    <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
-                  ]}
-
-                  extra={
-                    <img
-                      width={272}
-                      alt="logo"
-                      src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-                    />
-                  }
-                >
-                  <List.Item.Meta
-                    avatar={<Avatar src={item.avatar} />}
-                    title={<a href={item.href}>{item.title}</a>}
-                    description={item.description}
-                  />
-                  {item.content}
-                </List.Item>
-              )}
-            />
           </div>
         </div>
       </Spin>}

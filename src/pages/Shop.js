@@ -356,16 +356,16 @@ const Shop = () => {
           {loading ? (
             <Spinner></Spinner>
           ) : (
-            <>
-              <h4>Products</h4>
-              {products.length < 1 && (
-                <h4 className="text-center">No products found</h4>
-              )}
-              <div className="row pb-5">
-                <ProductList products={products}></ProductList>
-              </div>
-            </>
-          )}
+              <>
+                <h4>Products</h4>
+                {products.length < 1 && (
+                  <h4 className="text-center">No products found</h4>
+                )}
+                <div className="row pb-5">
+                  <ProductList products={products}></ProductList>
+                </div>
+              </>
+            )}
         </div>
       </div>
     </div>
