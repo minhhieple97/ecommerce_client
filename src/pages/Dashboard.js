@@ -1,22 +1,23 @@
-import { DeleteOutlined } from "@ant-design/icons";
-import { Card, Spin } from "antd";
-import { Table, Button } from "antd";
-import React, { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import UserNav from "../../components/nav/UserNav";
-import Spinner from "../../components/Spinner";
-import { getWishlist, removeWishlist } from "../../services/api/user";
-import { List, Avatar, Space } from "antd";
-import { MessageOutlined, LikeOutlined, StarOutlined } from "@ant-design/icons";
-const Dashboard = () => {
-  const [keyNav, setKeyNav] = useState("1");
+import React, { useState } from "react";
+import History from "./user/History";
+import Password from "./user/Password";
+import Wishlist from "./user/Wishlist";
+import UserNav from "../components/nav/UserNav";
+const Dashboard = ({ keyDefault }) => {
+  const [keyNav, setKeyNav] = useState(keyDefault);
+  const handleChangeKeyNav = (e) => {
+    setKeyNav(e.key);
+  };
   return (
     <div className="row">
       <div className="col-md-2">
-        <UserNav keyNav="3"></UserNav>
+        <UserNav handleClick={handleChangeKeyNav} keyNav={keyNav}></UserNav>
       </div>
-      <div className="col-md-10"></div>
+      <div className="col-md-10">
+        {keyNav === "1" && <History></History>}
+        {keyNav === "2" && <Password></Password>}
+        {keyNav === "3" && <Wishlist></Wishlist>}
+      </div>
     </div>
   );
 };

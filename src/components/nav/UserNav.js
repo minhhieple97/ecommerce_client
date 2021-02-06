@@ -7,13 +7,9 @@ import {
   HeartOutlined,
 } from "@ant-design/icons";
 
-const UserNav = ({ keyNav }) => {
-  const [selectkey, setSelectKey] = useState(keyNav);
-  const handleClick = (e) => {
-    setSelectKey(e.key);
-  };
+const UserNav = ({ keyNav, handleClick }) => {
   return (
-    <Menu onClick={handleClick} selectedKeys={[selectkey]} mode="inline">
+    <Menu onClick={handleClick} selectedKeys={[keyNav]} mode="inline">
       <Menu.Item key="1" icon={<HistoryOutlined />}>
         <Link to="/user/history">Order history</Link>
       </Menu.Item>

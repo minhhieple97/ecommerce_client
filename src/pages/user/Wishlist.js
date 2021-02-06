@@ -4,12 +4,8 @@ import { Table, Button } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import UserNav from "../../components/nav/UserNav";
 import Spinner from "../../components/Spinner";
 import { getWishlist, removeWishlist } from "../../services/api/user";
-import { List, Avatar, Space } from "antd";
-import { MessageOutlined, LikeOutlined, StarOutlined } from "@ant-design/icons";
-
 const columns = [
   {
     title: "Title",
@@ -113,48 +109,39 @@ const Wishlist = () => {
     setSelectedRowKeys(selectedRowKeys);
   };
   return (
-    <div className="container-fluid">
-      <div className="row">
-        <div className="col-md-2">
-          <UserNav keyNav="3"></UserNav>
-        </div>
-        <div className="col-md-10">
-          {loading ? (
-            <Spinner></Spinner>
-          ) : (
-            <Spin spinning={loadingSubmit}>
-              <Card
-              // style={{ marginTop: "5px" }}
+    <>
+      {loading ? (
+        <Spinner></Spinner>
+      ) : (
+        <Spin spinning={loadingSubmit}>
+          <Card
+          // style={{ marginTop: "5px" }}
+          >
+            <div>
+              <Button
+                style={{ marginBottom: "10px" }}
+                type="primary"
+                disabled={!hasSelected}
+                loading={loading}
               >
-                <div>
-                  <Button
-                    style={{ marginBottom: "10px" }}
-                    type="primary"
-                    disabled={!hasSelected}
-                    loading={loading}
-                  >
-                    Remove
-                  </Button>
-                  <span style={{ marginLeft: 8 }}>
-                    {hasSelected
-                      ? `Selected ${selectedRowKeys.length} items`
-                      : ""}
-                  </span>
-                </div>
-                <Table
-                  rowSelection={{
-                    selectedRowKeys,
-                    onChange: onSelectChange,
-                  }}
-                  columns={columns}
-                  dataSource={wishlist}
-                />
-              </Card>
-            </Spin>
-          )}
-        </div>
-      </div>
-    </div>
+                Remove
+              </Button>
+              <span style={{ marginLeft: 8 }}>
+                {hasSelected ? `Selected ${selectedRowKeys.length} items` : ""}
+              </span>
+            </div>
+            <Table
+              rowSelection={{
+                selectedRowKeys,
+                onChange: onSelectChange,
+              }}
+              columns={columns}
+              dataSource={wishlist}
+            />
+          </Card>
+        </Spin>
+      )}
+    </>
   );
 };
 export default Wishlist;

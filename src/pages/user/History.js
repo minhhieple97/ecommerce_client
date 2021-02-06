@@ -8,6 +8,8 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import ShowPaymentInfo from "../../components/cards/ShowPaymentInfo";
 import Invoice from "../../components/Invoice";
+import { Card, Typography } from "antd";
+const { Text } = Typography;
 const History = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -90,27 +92,20 @@ const History = () => {
       </div>
     ));
   return (
-    <div className="container-fluid">
-      <div className="row">
-        <div className="col-md-2">
-          <UserNav keyNav="1"></UserNav>
-        </div>
-        <div className="col-md-10 text-center">
-          {loading ? (
-            <Spinner></Spinner>
-          ) : (
-            <>
-              <h4 style={{ marginTop: "10px" }}>
-                {orders.length > 0
-                  ? "User purchase orders"
-                  : "No purchase orders"}
-              </h4>
-              {showPurchaseOrders()}
-            </>
+    <>
+      {loading ? (
+        <Spinner></Spinner>
+      ) : (
+        <>
+          {orders.length === 0 && (
+            <Text style={{ color: "black", fontSize: "30px" }}>
+              You have no orders yet.
+            </Text>
           )}
-        </div>
-      </div>
-    </div>
+          {showPurchaseOrders()}
+        </>
+      )}
+    </>
   );
 };
 export default History;

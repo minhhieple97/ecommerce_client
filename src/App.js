@@ -14,12 +14,10 @@ const Header = lazy(() => import("./components/nav/Header"));
 const Draw = lazy(() => import("./components/sideDraw/Draw"));
 const RegisterComplete = lazy(() => import("./pages/auth/RegisterComplete"));
 const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
-const History = lazy(() => import("./pages/user/History"));
 const UserRoute = lazy(() => import("./components/routes/UserRoute"));
 const AdminRoute = lazy(() => import("./components/routes/AdminRoute"));
-const Password = lazy(() => import("./pages/user/Password"));
-const Wishlist = lazy(() => import("./pages/user/Wishlist"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 const CategoryCreate = lazy(() =>
   import("./pages/admin/category/CategoryCreate")
 );
@@ -49,7 +47,7 @@ const App = () => {
     <Suspense
       fallback={
         <div className="col text-center p-5">
-          __ React Redux  <LoadingOutlined></LoadingOutlined> E-commerce __
+          __ React Redux <LoadingOutlined></LoadingOutlined> E-commerce __
         </div>
       }
     >
@@ -67,9 +65,21 @@ const App = () => {
         ></Route>
         <Route exact path="/forgot/password" component={ForgotPassword}></Route>
         <Route path="/product/:slug" exact component={Product}></Route>
-        <UserRoute exact path="/user/history" component={History} />
-        <UserRoute exact path="/user/password" component={Password} />
-        <UserRoute exact path="/user/wishlist" component={Wishlist} />
+        <UserRoute
+          exact
+          path="/user/history"
+          component={() => <Dashboard keyDefault="1"></Dashboard>}
+        />
+        <UserRoute
+          exact
+          path="/user/password"
+          component={() => <Dashboard keyDefault="2"></Dashboard>}
+        />
+        <UserRoute
+          exact
+          path="/user/wishlist"
+          component={() => <Dashboard keyDefault="3"></Dashboard>}
+        />
         <AdminRoute
           exact
           path="/admin/dashboard"
