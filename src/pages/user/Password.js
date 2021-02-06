@@ -1,8 +1,31 @@
 import React, { useState } from "react";
 import UserNav from "../../components/nav/UserNav";
-import { Button } from "antd";
+import { Button, Card } from "antd";
 import { toast } from "react-toastify";
 import { auth } from "../../firebase";
+import { Form, Input, Checkbox, InputNumber } from "antd";
+const layout = {
+  labelCol: {
+    span: 8,
+  },
+  wrapperCol: {
+    span: 16,
+  },
+};
+const validateMessages = {
+  required: "${label} is required!",
+  types: {
+    email: "${label} is not a valid email!",
+    number: "${label} is not a valid number!",
+  },
+  number: {
+    range: "${label} must be between ${min} and ${max}",
+  },
+};
+const Demo = () => {};
+const onFinish = (values) => {
+  console.log(values);
+};
 const Password = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,40 +45,56 @@ const Password = () => {
   };
   const passwordUpdateForm = () => {
     return (
-      <form>
-        <div className="form-group">
-          <label>Your Password</label>
-          <input
-            type="password"
-            onChange={(e) => setPassword(e.target.value)}
-            className="form-control"
-            placeholder="Enter new password"
-            disabled={loading}
-            value={password}
-          ></input>
-          <br></br>
-          <Button
-            type="primary"
-            disabled={loading || !password || password.length < 6}
-            loading={loading}
-            onClick={handleSubmit}
+      <Card>
+        <Form
+          {...layout}
+          name="nest-messages"
+          onFinish={onFinish}
+          validateMessages={validateMessages}
+        >
+          <Form.Item
+            name={["user", "name"]}
+            label="Name"
+            rules={[{ required: true }]}
           >
-            Update
-          </Button>
-        </div>
-      </form>
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name={["user", "email"]}
+            label="Email"
+            rules={[{ type: "email" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name={["user", "age"]}
+            label="Age"
+            rules={[{ type: "number", min: 0, max: 99 }]}
+          >
+            <InputNumber />
+          </Form.Item>
+          <Form.Item name={["user", "website"]} label="Website">
+            <Input />
+          </Form.Item>
+          <Form.Item name={["user", "introduction"]} label="Introduction">
+            <Input.TextArea />
+          </Form.Item>
+          <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
     );
   };
   return (
     <div className="container-fluid">
       <div className="row">
         <div className="col-md-2">
-          <UserNav></UserNav>
+          <UserNav keyNav="2"></UserNav>
         </div>
-        <div className="col">
-          <h3>Password Update</h3>
-          {passwordUpdateForm()}
-        </div>
+        <div className="col-md-10">{passwordUpdateForm()}</div>
       </div>
     </div>
   );

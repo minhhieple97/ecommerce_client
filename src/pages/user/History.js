@@ -4,9 +4,7 @@ import { toast } from "react-toastify";
 import { getOrders } from "../../services/api/user";
 import { useSelector } from "react-redux";
 import Spinner from "../../components/Spinner";
-import {
-  PDFDownloadLink,
-} from "@react-pdf/renderer";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import ShowPaymentInfo from "../../components/cards/ShowPaymentInfo";
 import Invoice from "../../components/Invoice";
@@ -30,9 +28,7 @@ const History = () => {
   }, [_getOrders]);
   const showDownloadLink = (order) => (
     <PDFDownloadLink
-      document={
-        <Invoice order={order} ></Invoice>
-      }
+      document={<Invoice order={order}></Invoice>}
       fileName="invoice.pdf"
       className="btn btn-sm btn-block btn-outline-primary"
     >
@@ -69,10 +65,10 @@ const History = () => {
                       style={{ color: "green" }}
                     ></CheckCircleOutlined>
                   ) : (
-                      <CloseCircleOutlined
-                        style={{ color: "red" }}
-                      ></CloseCircleOutlined>
-                    )}
+                    <CloseCircleOutlined
+                      style={{ color: "red" }}
+                    ></CloseCircleOutlined>
+                  )}
                 </td>
               </tr>
             );
@@ -95,25 +91,25 @@ const History = () => {
     ));
   return (
     <div className="container-fluid">
-      {loading ? (
-        <Spinner></Spinner>
-      ) : (
-          <>
-            <div className="row">
-              <div className="col-md-2">
-                <UserNav></UserNav>
-              </div>
-              <div className="col-md-10 text-center">
-                <h4 style={{ marginTop: "10px" }} >
-                  {orders.length > 0
-                    ? "User purchase orders"
-                    : "No purchase orders"}
-                </h4>
-                {showPurchaseOrders()}
-              </div>
-            </div>
-          </>
-        )}
+      <div className="row">
+        <div className="col-md-2">
+          <UserNav keyNav="1"></UserNav>
+        </div>
+        <div className="col-md-10 text-center">
+          {loading ? (
+            <Spinner></Spinner>
+          ) : (
+            <>
+              <h4 style={{ marginTop: "10px" }}>
+                {orders.length > 0
+                  ? "User purchase orders"
+                  : "No purchase orders"}
+              </h4>
+              {showPurchaseOrders()}
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

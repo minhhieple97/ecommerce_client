@@ -1,36 +1,35 @@
 import { DeleteOutlined } from "@ant-design/icons";
 import { Card, Spin } from "antd";
-import { Table, Button } from 'antd';
+import { Table, Button } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import UserNav from "../../components/nav/UserNav";
 import Spinner from "../../components/Spinner";
 import { getWishlist, removeWishlist } from "../../services/api/user";
-import { List, Avatar, Space } from 'antd';
-import { MessageOutlined, LikeOutlined, StarOutlined } from '@ant-design/icons';
-
+import { List, Avatar, Space } from "antd";
+import { MessageOutlined, LikeOutlined, StarOutlined } from "@ant-design/icons";
 
 const columns = [
   {
-    title: 'Title',
-    dataIndex: 'title',
+    title: "Title",
+    dataIndex: "title",
   },
   {
-    title: 'Price',
-    dataIndex: 'price',
+    title: "Price",
+    dataIndex: "price",
   },
   {
-    title: 'Brand',
-    dataIndex: 'brand',
+    title: "Brand",
+    dataIndex: "brand",
   },
   {
-    title: 'Color',
-    dataIndex: 'color',
+    title: "Color",
+    dataIndex: "color",
   },
   {
-    title: 'Status',
-    dataIndex: 'status',
+    title: "Status",
+    dataIndex: "status",
   },
 ];
 const data = [];
@@ -74,21 +73,23 @@ const Wishlist = () => {
     }
   };
   const showWishlist = () => {
-    return <>
-      <h4>Wishlist</h4>
-      {wishlist.map((p) => (
-        <div key={p._id} className="alert alert-secondary">
-          <Link to={`/product/${p.slug}`}>{p.title}</Link>
-          <span
-            onClick={() => handleRemoveFromWishlist(p._id)}
-            className="btn btn-sm float-right"
-          >
-            <DeleteOutlined className="text-danger" />
-          </span>
-        </div>
-      ))}
-    </>
-  }
+    return (
+      <>
+        <h4>Wishlist</h4>
+        {wishlist.map((p) => (
+          <div key={p._id} className="alert alert-secondary">
+            <Link to={`/product/${p.slug}`}>{p.title}</Link>
+            <span
+              onClick={() => handleRemoveFromWishlist(p._id)}
+              className="btn btn-sm float-right"
+            >
+              <DeleteOutlined className="text-danger" />
+            </span>
+          </div>
+        ))}
+      </>
+    );
+  };
   // return (
   //   <div className="container-fluid">
   //     {loading ? (
@@ -107,35 +108,53 @@ const Wishlist = () => {
   //       )}
   //   </div>
   // );
-  const onSelectChange = selectedRowKeys => {
-    console.log('selectedRowKeys changed: ', selectedRowKeys);
+  const onSelectChange = (selectedRowKeys) => {
+    console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
-
-  return <div className="container-fluid" >
-    {
-      loading ? <Spinner></Spinner> : <Spin spinning={loadingSubmit} >
-        <div className="row" >
-          <div className="col-md-2" >
-            <UserNav></UserNav>
-          </div>
-          <div className="col-md-10" >
-            <Card style={{ marginTop: "10px" }} >
-              <div style={{ marginBottom: 16 }}>
-                <Button type="primary" disabled={!hasSelected} loading={loading}>
-                  Remove
-          </Button>
-                <span style={{ marginLeft: 8 }}>
-                  {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
-                </span>
-              </div>
-              <Table rowSelection={{ selectedRowKeys, onChange: onSelectChange }} columns={columns} dataSource={wishlist} />
-            </Card>
-
-          </div>
+  return (
+    <div className="container-fluid">
+      <div className="row">
+        <div className="col-md-2">
+          <UserNav keyNav="3"></UserNav>
         </div>
-      </Spin>}
-  </div>
-
+        <div className="col-md-10">
+          {loading ? (
+            <Spinner></Spinner>
+          ) : (
+            <Spin spinning={loadingSubmit}>
+              <Card
+              // style={{ marginTop: "5px" }}
+              >
+                <div>
+                  <Button
+                    style={{ marginBottom: "10px" }}
+                    type="primary"
+                    disabled={!hasSelected}
+                    loading={loading}
+                  >
+                    Remove
+                  </Button>
+                  <span style={{ marginLeft: 8 }}>
+                    {hasSelected
+                      ? `Selected ${selectedRowKeys.length} items`
+                      : ""}
+                  </span>
+                </div>
+                <Table
+                  rowSelection={{
+                    selectedRowKeys,
+                    onChange: onSelectChange,
+                  }}
+                  columns={columns}
+                  dataSource={wishlist}
+                />
+              </Card>
+            </Spin>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 };
 export default Wishlist;
