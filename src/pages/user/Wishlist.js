@@ -5,7 +5,10 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Spinner from "../../components/Spinner";
-import { getWishlist, removeWishlist } from "../../services/api/user";
+import {
+  getWishlist,
+  removeProductInWishlist,
+} from "../../services/api/wishlist";
 const columns = [
   {
     title: "Title",
@@ -27,17 +30,11 @@ const columns = [
     title: "Status",
     dataIndex: "status",
   },
+  {
+    title: "Preview",
+    dataIndex: "preview",
+  },
 ];
-const data = [];
-for (let i = 0; i < 46; i++) {
-  data.push({
-    key: i,
-    name: `Edward King ${i}`,
-    age: 32,
-    address: `London, Park Lane no. ${i}`,
-  });
-}
-
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);
   const user = useSelector((state) => state.user);
@@ -47,8 +44,12 @@ const Wishlist = () => {
   const hasSelected = selectedRowKeys.length > 0;
   const _getWishlist = useCallback(async () => {
     try {
-      const { userWishlist } = await getWishlist(user.token);
-      setWishlist(userWishlist.wishlist);
+      const { wishlist } = await getWishlist(user.token);
+      const wishlistProduct = wishlist.map((el) => {
+        el.product.preview = el.images[0].imageUrl;
+        return el.product;
+      });
+      setWishlist(wishlistProduct);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -60,7 +61,7 @@ const Wishlist = () => {
   const handleRemoveFromWishlist = async (id) => {
     try {
       setLoadingSubmit(true);
-      await removeWishlist(user.token, id);
+      await removeProductInWishlist(user.token, id);
       const newWishlist = wishlist.filter((el) => el._id !== id);
       setWishlist(newWishlist);
       setLoadingSubmit(false);
@@ -68,42 +69,6 @@ const Wishlist = () => {
       setLoadingSubmit(false);
     }
   };
-  const showWishlist = () => {
-    return (
-      <>
-        <h4>Wishlist</h4>
-        {wishlist.map((p) => (
-          <div key={p._id} className="alert alert-secondary">
-            <Link to={`/product/${p.slug}`}>{p.title}</Link>
-            <span
-              onClick={() => handleRemoveFromWishlist(p._id)}
-              className="btn btn-sm float-right"
-            >
-              <DeleteOutlined className="text-danger" />
-            </span>
-          </div>
-        ))}
-      </>
-    );
-  };
-  // return (
-  //   <div className="container-fluid">
-  //     {loading ? (
-  //       <Spinner></Spinner>
-  //     ) : (
-  //         <Spin spinning={loadingSubmit}>
-  //           <div className="row">
-  //             <div className="col-md-2">
-  //               <UserNav></UserNav>
-  //             </div>
-  //             <div className="col-md-10">
-  //               {wishlist.length > 0 ? showWishlist() : <h4 style={{ marginTop: "10px" }} className="text-center" >No wish list found</h4>}
-  //             </div>
-  //           </div>
-  //         </Spin>
-  //       )}
-  //   </div>
-  // );
   const onSelectChange = (selectedRowKeys) => {
     console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
@@ -114,9 +79,7 @@ const Wishlist = () => {
         <Spinner></Spinner>
       ) : (
         <Spin spinning={loadingSubmit}>
-          <Card
-          // style={{ marginTop: "5px" }}
-          >
+          <Card>
             <div>
               <Button
                 style={{ marginBottom: "10px" }}

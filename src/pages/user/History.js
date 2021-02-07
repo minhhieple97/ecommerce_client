@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import UserNav from "../../components/nav/UserNav";
 import { toast } from "react-toastify";
 import { getOrders } from "../../services/api/user";
 import { useSelector } from "react-redux";
@@ -8,7 +7,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import ShowPaymentInfo from "../../components/cards/ShowPaymentInfo";
 import Invoice from "../../components/Invoice";
-import { Card, Typography } from "antd";
+import { Typography } from "antd";
 const { Text } = Typography;
 const History = () => {
   const [orders, setOrders] = useState([]);

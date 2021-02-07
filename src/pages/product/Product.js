@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setAuthRedirectPath } from "../../store/actions";
 import { Spin } from "antd";
 import ProductList from "../../components/product/ProductList";
-import { addToWishlist } from "../../services/api/user";
+import { addToWishlist } from "../../services/api/wishlist";
 import {
   createOrUpdateRating,
   getCurrentRatingProductOfUser,
@@ -19,7 +19,7 @@ const Product = ({ match, history }) => {
   const [product, setProduct] = useState({ ...INITIAL_STATE_PRODUCT });
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [average, setAverage] = useState(null)
+  const [average, setAverage] = useState(null);
   const [loadingRatings, setLoadingRatings] = useState(false);
   const [ratingsData, setRatingsData] = useState({
     ratings: [],
@@ -56,7 +56,7 @@ const Product = ({ match, history }) => {
           history.push("/");
         } else {
           setProduct(product);
-          if (product.averageStar) setAverage(product.averageStar)
+          if (product.averageStar) setAverage(product.averageStar);
           setListRelated(listRelated);
           if (user._id) {
             const { rating } = await getCurrentRatingProductOfUser(
@@ -92,7 +92,7 @@ const Product = ({ match, history }) => {
   };
   const handleSubmitRating = async () => {
     try {
-      console.log("OK")
+      console.log("OK");
       if (review.trim() && (review.length < 5 || review.length > 128)) {
         toast.warning(
           "Comments should be at least 5 characters long and must have at most 128 characters."
@@ -105,7 +105,7 @@ const Product = ({ match, history }) => {
       if (review) body.review = review;
       const { average } = await createOrUpdateRating(user.token, body);
       setStar(star);
-      console.log({ average })
+      console.log({ average });
       setReview(review);
       setAverage(average);
       const { ratings, totalPages, page, limit } = await getListRatingProduct({
@@ -123,7 +123,7 @@ const Product = ({ match, history }) => {
       setLoadingSubmit(false);
       toast.error(
         (error.response && error.response.data) ||
-        "Sorry something went wrong, please try again :(( "
+          "Sorry something went wrong, please try again :(( "
       );
     }
   };
@@ -132,15 +132,16 @@ const Product = ({ match, history }) => {
       if (user._id) {
         setLoadingSubmit(true);
         await addToWishlist(user.token, { productId: product._id });
-        toast.success("Added to wishlist");
+        toast.success("Added to wishlist.");
         setLoadingSubmit(false);
-        history.push("/user/wishlist");
       } else {
         dispatch(setAuthRedirectPath(match.url));
         history.push("/login");
       }
     } catch (error) {
       setLoadingSubmit(false);
+      console.log(error);
+      toast.success("Something went wrong, please try again.");
     }
   };
   const handleChangeReview = async (e) => {
@@ -165,45 +166,45 @@ const Product = ({ match, history }) => {
       {loading ? (
         <Spinner></Spinner>
       ) : (
-          <>
-            <Spin spinning={loadingSubmit}>
-              <div className="row pt-4">
-                <ProductDetail
-                  average={average}
-                  loadingRatings={loadingRatings}
-                  ratingsData={ratingsData}
-                  handlePaginationRatings={handlePaginationRatings}
-                  star={star}
-                  review={review}
-                  user={user}
-                  handleChangeRating={handleChangeRating}
-                  product={product}
-                  visible={visible}
-                  handleVisible={handleVisible}
-                  handleSubmitRating={handleSubmitRating}
-                  handleAddToWishlist={handleAddToWishlist}
-                  handleChangeReview={handleChangeReview}
-                ></ProductDetail>
+        <>
+          <Spin spinning={loadingSubmit}>
+            <div className="row pt-4">
+              <ProductDetail
+                average={average}
+                loadingRatings={loadingRatings}
+                ratingsData={ratingsData}
+                handlePaginationRatings={handlePaginationRatings}
+                star={star}
+                review={review}
+                user={user}
+                handleChangeRating={handleChangeRating}
+                product={product}
+                visible={visible}
+                handleVisible={handleVisible}
+                handleSubmitRating={handleSubmitRating}
+                handleAddToWishlist={handleAddToWishlist}
+                handleChangeReview={handleChangeReview}
+              ></ProductDetail>
+            </div>
+            <div className="row">
+              <div className="col text-center pt-5 pb-5">
+                <hr />
+                <h4>Related products</h4>
+                <hr />
               </div>
-              <div className="row">
-                <div className="col text-center pt-5 pb-5">
-                  <hr />
-                  <h4>Related products</h4>
-                  <hr />
-                </div>
-              </div>
-              <div className="row pb-5">
-                {listRelated.length ? (
-                  <>
-                    <ProductList products={listRelated}></ProductList>
-                  </>
-                ) : (
-                    <div className="text-center col">No Products Found</div>
-                  )}
-              </div>
-            </Spin>
-          </>
-        )}
+            </div>
+            <div className="row pb-5">
+              {listRelated.length ? (
+                <>
+                  <ProductList products={listRelated}></ProductList>
+                </>
+              ) : (
+                <div className="text-center col">No Products Found</div>
+              )}
+            </div>
+          </Spin>
+        </>
+      )}
     </div>
   );
 };

@@ -56,35 +56,42 @@ const ProductDetail = ({
             })}
           </Carousel>
         ) : (
-            <Card
-              cover={
-                <img
-                  src="/images/laptop.png"
-                  className="mb-3 card-image"
-                  alt="cover"
-                ></img>
-              }
-            ></Card>
-          )}
+          <Card
+            cover={
+              <img
+                src="/images/laptop.png"
+                className="mb-3 card-image"
+                alt="cover"
+              ></img>
+            }
+          ></Card>
+        )}
         <Tabs type="card" defaultActiveKey="2">
           <TabPane tab="Description" key="1">
             {description}
           </TabPane>
           <TabPane tab="Reviews" key="2">
             <div className="container">
-              {ratings && ratings.length > 0 ? <Spin spinning={loadingRatings}>
-                <div className="row">
-                  <Ratings content={ratings}></Ratings>
-                </div>
-                <div className="row" style={{ marginTop: "30px" }}>
-                  <PaginationList
-                    page={page}
-                    totalPages={totalPages}
-                    handleOnChange={handlePaginationRatings}
-                    simple={true}
-                  />
-                </div>
-              </Spin> : <p>This product has no reviews yet.</p>}
+              {ratings && ratings.length > 0 ? (
+                <Spin spinning={loadingRatings}>
+                  <div className="row">
+                    <Ratings
+                      totalRating={product.totalRating}
+                      content={ratings}
+                    ></Ratings>
+                  </div>
+                  <div className="row" style={{ marginTop: "30px" }}>
+                    <PaginationList
+                      page={page}
+                      totalPages={totalPages}
+                      handleOnChange={handlePaginationRatings}
+                      simple={true}
+                    />
+                  </div>
+                </Spin>
+              ) : (
+                <p>This product has no reviews yet.</p>
+              )}
             </div>
           </TabPane>
           <TabPane tab="More" key="3">
@@ -97,8 +104,8 @@ const ProductDetail = ({
         {average ? (
           <Rating average={average}></Rating>
         ) : (
-            <div className="text-center pt-1 pb-3">No review yet</div>
-          )}
+          <div className="text-center pt-1 pb-3">No review yet</div>
+        )}
         <Card
           actions={[
             <Tooltip title={tooltip}>
