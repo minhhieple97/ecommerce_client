@@ -18,7 +18,8 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    throw error;
+    const message = (error.response && error.response.data) ? error.response.data.message : "Something went wrong, please try again."
+    throw new Error(message);
   }
 );
 const post = (url, token, data) => {

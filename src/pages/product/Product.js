@@ -137,7 +137,7 @@ const Product = ({ match, history }) => {
       if (user._id) {
         setLoadingSubmit(true);
         if (flag) await addToWishlist(user.token, { productId: product._id });
-        else await removeProductInWishlist(user.token, product._id)
+        else await removeProductInWishlist(user.token, { product: [product._id] })
         setFlagWishlist(flag);
         const message = flag ? 'Added to wishlist.' : 'Deleted to wishlist.'
         toast.success(message);
@@ -148,8 +148,7 @@ const Product = ({ match, history }) => {
       }
     } catch (error) {
       setLoadingSubmit(false);
-      console.log(error);
-      toast.success("Something went wrong, please try again.");
+      toast.success(error.message);
     }
   };
   const handleChangeReview = async (e) => {

@@ -1,6 +1,7 @@
 const { get, post, remove, update } = require("./axiosClient");
 
 export const getProducts = (query, token) => {
+  console.log({ query })
   return get(`/product/list`, token, { ...query });
 };
 export const getProduct = (slug, token) => {

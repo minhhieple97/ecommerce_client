@@ -71,6 +71,7 @@ const Shop = () => {
         if ("shipping" in value && value.shipping) {
           query.shipping = value.shipping;
         }
+
         const { products } = await getProducts(query);
         setProducts(products);
         setLoading(false);
@@ -160,6 +161,7 @@ const Shop = () => {
     color,
     shipping,
   ]);
+  console.log({ categoryIds })
   const handleStarClick = (num) => {
     setStar(num);
     setAllRatings(false);

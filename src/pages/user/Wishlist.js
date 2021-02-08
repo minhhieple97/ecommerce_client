@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Spinner from "../../components/Spinner";
+import { Image } from 'antd';
 import {
   getWishlist,
   removeProductInWishlist,
@@ -36,7 +37,7 @@ const columns = [
   },
 ];
 const Wishlist = () => {
-  const [wishlist, setWishlist] = useState([]);
+  const [wishlistData, setWishlistData] = useState([]);
   const user = useSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
@@ -46,24 +47,26 @@ const Wishlist = () => {
     try {
       const { wishlist } = await getWishlist(user.token);
       const wishlistProduct = wishlist.map((el) => {
-        el.product.preview = el.images[0].imageUrl;
+        el.product.preview = <Image width={50} src={el.product.images[0].imageUrl} />;
+        el.product.key = el.product._id;
         return el.product;
       });
-      setWishlist(wishlistProduct);
+      setWishlistData(wishlistProduct);
       setLoading(false);
     } catch (error) {
+      console.log(error)
       setLoading(false);
     }
   }, [user.token]);
   useEffect(() => {
     _getWishlist();
   }, [_getWishlist]);
-  const handleRemoveFromWishlist = async (id) => {
+  const handleRemoveFromWishlist = async () => {
     try {
       setLoadingSubmit(true);
-      await removeProductInWishlist(user.token, id);
-      const newWishlist = wishlist.filter((el) => el._id !== id);
-      setWishlist(newWishlist);
+      await removeProductInWishlist(user.token, { product: selectedRowKeys });
+      // const newWishlist = wishlistData.filter((el) => el._id !== id);
+      // setWishlistData(newWishlist);
       setLoadingSubmit(false);
     } catch (error) {
       setLoadingSubmit(false);
@@ -73,37 +76,40 @@ const Wishlist = () => {
     console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
+  console.log({ selectedRowKeys })
   return (
     <>
       {loading ? (
         <Spinner></Spinner>
       ) : (
-        <Spin spinning={loadingSubmit}>
-          <Card>
-            <div>
-              <Button
-                style={{ marginBottom: "10px" }}
-                type="primary"
-                disabled={!hasSelected}
-                loading={loading}
-              >
-                Remove
+          <Spin spinning={loadingSubmit}>
+            <Card>
+              <div>
+                <Button
+                  style={{ marginBottom: "10px" }}
+                  type="primary"
+                  disabled={!hasSelected}
+                  loading={loading}
+                  onClick={handleRemoveFromWishlist}
+                >
+                  Remove
               </Button>
-              <span style={{ marginLeft: 8 }}>
-                {hasSelected ? `Selected ${selectedRowKeys.length} items` : ""}
-              </span>
-            </div>
-            <Table
-              rowSelection={{
-                selectedRowKeys,
-                onChange: onSelectChange,
-              }}
-              columns={columns}
-              dataSource={wishlist}
-            />
-          </Card>
-        </Spin>
-      )}
+                <span style={{ marginLeft: 8 }}>
+                  {hasSelected ? `Selected ${selectedRowKeys.length} items` : ""}
+                </span>
+              </div>
+              <Table
+                rowSelection={{
+                  selectedRowKeys,
+                  onChange: onSelectChange,
+                }}
+                locale={{ emptyText: <strong>Wishlist is empty</strong> }}
+                columns={columns}
+                dataSource={wishlistData}
+              />
+            </Card>
+          </Spin>
+        )}
     </>
   );
 };

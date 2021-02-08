@@ -8,8 +8,8 @@ export const addToWishlist = (token, data) => {
   return post("/wishlist", token, data);
 };
 
-export const removeProductInWishlist = (token, productId) => {
-  return remove(`/wishlist/${productId}`, token);
+export const removeProductInWishlist = (token, query) => {
+  return remove(`/wishlist`, token, { ...query });
 };
 
 
