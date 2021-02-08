@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setAuthRedirectPath } from "../../store/actions";
 import { Spin } from "antd";
 import ProductList from "../../components/product/ProductList";
-import { addToWishlist } from "../../services/api/wishlist";
+import { addToWishlist, checkProductInWishlist, removeProductInWishlist } from "../../services/api/wishlist";
 import {
   createOrUpdateRating,
   getCurrentRatingProductOfUser,
@@ -20,6 +20,7 @@ const Product = ({ match, history }) => {
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [average, setAverage] = useState(null);
+  const [flagWishlist, setFlagWishlist] = useState(false);
   const [loadingRatings, setLoadingRatings] = useState(false);
   const [ratingsData, setRatingsData] = useState({
     ratings: [],
@@ -59,10 +60,14 @@ const Product = ({ match, history }) => {
           if (product.averageStar) setAverage(product.averageStar);
           setListRelated(listRelated);
           if (user._id) {
-            const { rating } = await getCurrentRatingProductOfUser(
-              product._id,
-              user.token
-            );
+            const [{ rating }, { flag }] = await Promise.all([
+              getCurrentRatingProductOfUser(
+                product._id,
+                user.token
+              ),
+              checkProductInWishlist(user.token, product._id)
+            ]);
+            setFlagWishlist(flag)
             if (rating) {
               setStar(rating.star);
               setReview(rating.review);
@@ -123,16 +128,19 @@ const Product = ({ match, history }) => {
       setLoadingSubmit(false);
       toast.error(
         (error.response && error.response.data) ||
-          "Sorry something went wrong, please try again :(( "
+        "Sorry something went wrong, please try again :(( "
       );
     }
   };
-  const handleAddToWishlist = async () => {
+  const handleChangeWishlist = async (flag) => {
     try {
       if (user._id) {
         setLoadingSubmit(true);
-        await addToWishlist(user.token, { productId: product._id });
-        toast.success("Added to wishlist.");
+        if (flag) await addToWishlist(user.token, { productId: product._id });
+        else await removeProductInWishlist(user.token, product._id)
+        setFlagWishlist(flag);
+        const message = flag ? 'Added to wishlist.' : 'Deleted to wishlist.'
+        toast.success(message);
         setLoadingSubmit(false);
       } else {
         dispatch(setAuthRedirectPath(match.url));
@@ -166,45 +174,46 @@ const Product = ({ match, history }) => {
       {loading ? (
         <Spinner></Spinner>
       ) : (
-        <>
-          <Spin spinning={loadingSubmit}>
-            <div className="row pt-4">
-              <ProductDetail
-                average={average}
-                loadingRatings={loadingRatings}
-                ratingsData={ratingsData}
-                handlePaginationRatings={handlePaginationRatings}
-                star={star}
-                review={review}
-                user={user}
-                handleChangeRating={handleChangeRating}
-                product={product}
-                visible={visible}
-                handleVisible={handleVisible}
-                handleSubmitRating={handleSubmitRating}
-                handleAddToWishlist={handleAddToWishlist}
-                handleChangeReview={handleChangeReview}
-              ></ProductDetail>
-            </div>
-            <div className="row">
-              <div className="col text-center pt-5 pb-5">
-                <hr />
-                <h4>Related products</h4>
-                <hr />
+          <>
+            <Spin spinning={loadingSubmit}>
+              <div className="row pt-4">
+                <ProductDetail
+                  flagWishlist={flagWishlist}
+                  average={average}
+                  loadingRatings={loadingRatings}
+                  ratingsData={ratingsData}
+                  handlePaginationRatings={handlePaginationRatings}
+                  star={star}
+                  review={review}
+                  user={user}
+                  handleChangeRating={handleChangeRating}
+                  product={product}
+                  visible={visible}
+                  handleVisible={handleVisible}
+                  handleSubmitRating={handleSubmitRating}
+                  handleChangeWishlist={handleChangeWishlist}
+                  handleChangeReview={handleChangeReview}
+                ></ProductDetail>
               </div>
-            </div>
-            <div className="row pb-5">
-              {listRelated.length ? (
-                <>
-                  <ProductList products={listRelated}></ProductList>
-                </>
-              ) : (
-                <div className="text-center col">No Products Found</div>
-              )}
-            </div>
-          </Spin>
-        </>
-      )}
+              <div className="row">
+                <div className="col text-center pt-5 pb-5">
+                  <hr />
+                  <h4>Related products</h4>
+                  <hr />
+                </div>
+              </div>
+              <div className="row pb-5">
+                {listRelated.length ? (
+                  <>
+                    <ProductList products={listRelated}></ProductList>
+                  </>
+                ) : (
+                    <div className="text-center col">No Products Found</div>
+                  )}
+              </div>
+            </Spin>
+          </>
+        )}
     </div>
   );
 };

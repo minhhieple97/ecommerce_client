@@ -1,35 +1,35 @@
 const { post, get, update } = require("./axiosClient");
 
-export const addAddress = async (token, data) => {
-  return await post("/user/address", token, data);
+export const addAddress = (token, data) => {
+  return post("/user/address", token, data);
 };
 
-export const applyCoupon = async (token, data) => {
-  return await post("/user/cart/coupon", token, data);
+export const applyCoupon = (token, data) => {
+  return post("/user/cart/coupon", token, data);
 };
 
-export const createOrder = async (token, data) => {
-  return await post("/user/order", token, data);
+export const createOrder = (token, data) => {
+  return post("/user/order", token, data);
 };
 
-export const createCashOrder = async (token, data) => {
-  return await post("/user/cash-order", token, data);
+export const createCashOrder = (token, data) => {
+  return post("/user/cash-order", token, data);
 };
 
-export const getOrders = async (token) => {
-  return await get("/user/order", token);
+export const getOrders = (token) => {
+  return get("/user/order", token);
 };
 
-export const getWishlist = async (token) => {
-  return await get("/user/wishlist", token);
+export const getWishlist = (token) => {
+  return get("/user/wishlist", token);
 };
 
-export const addToWishlist = async (token, data) => {
-  return await post("/user/wishlist", token, data);
+export const addToWishlist = (token, data) => {
+  return post("/user/wishlist", token, data);
 };
 
-export const removeWishlist = async (token, productId) => {
-  return await update(`/user/wishlist/${productId}`, token);
+export const removeWishlist = (token, productId) => {
+  return update(`/user/wishlist/${productId}`, token);
 };
 
 

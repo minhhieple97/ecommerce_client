@@ -1,4 +1,4 @@
-import { HeartOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { DeleteOutlined, HeartOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Card, Comment, Spin, Tabs, Tooltip } from "antd";
 import React, { useState } from "react";
 import { Carousel } from "react-responsive-carousel";
@@ -23,11 +23,12 @@ const ProductDetail = ({
   star,
   review,
   handleSubmitRating,
-  handleAddToWishlist,
+  handleChangeWishlist,
   handleChangeReview,
   ratingsData,
   handlePaginationRatings,
   loadingRatings,
+  flagWishlist
 }) => {
   const { images, title, description, _id, quantity } = product;
   const { ratings, page, totalPages } = ratingsData;
@@ -56,16 +57,16 @@ const ProductDetail = ({
             })}
           </Carousel>
         ) : (
-          <Card
-            cover={
-              <img
-                src="/images/laptop.png"
-                className="mb-3 card-image"
-                alt="cover"
-              ></img>
-            }
-          ></Card>
-        )}
+            <Card
+              cover={
+                <img
+                  src="/images/laptop.png"
+                  className="mb-3 card-image"
+                  alt="cover"
+                ></img>
+              }
+            ></Card>
+          )}
         <Tabs type="card" defaultActiveKey="2">
           <TabPane tab="Description" key="1">
             {description}
@@ -90,8 +91,8 @@ const ProductDetail = ({
                   </div>
                 </Spin>
               ) : (
-                <p>This product has no reviews yet.</p>
-              )}
+                  <p>This product has no reviews yet.</p>
+                )}
             </div>
           </TabPane>
           <TabPane tab="More" key="3">
@@ -104,8 +105,8 @@ const ProductDetail = ({
         {average ? (
           <Rating average={average}></Rating>
         ) : (
-          <div className="text-center pt-1 pb-3">No review yet</div>
-        )}
+            <div className="text-center pt-1 pb-3">No review yet</div>
+          )}
         <Card
           actions={[
             <Tooltip title={tooltip}>
@@ -114,9 +115,11 @@ const ProductDetail = ({
                 <br /> {quantity > 0 ? "Add to Cart" : "Out of Stock"}
               </div>
             </Tooltip>,
-            <div onClick={() => handleAddToWishlist()}>
-              <HeartOutlined className="text-info"></HeartOutlined> <br />
-              Add to Wishlist
+            <div onClick={() => handleChangeWishlist(!flagWishlist)}>
+              {!flagWishlist ? <><HeartOutlined className="text-info"></HeartOutlined> <br />
+              Add to Wishlist</> : <><DeleteOutlined></DeleteOutlined><br />
+              Remove to Wishlist</>}
+
             </div>,
             <RatingModal
               user={user}

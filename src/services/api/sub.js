@@ -1,21 +1,21 @@
 const { get, post, remove, update } = require("./axiosClient");
 
-export const getSubs = async (token) => {
-    return await get("/sub/list", token);
+export const getSubs = (token) => {
+    return get("/sub/list", token);
 };
 
-export const getSub = async (slug) => {
-    return await get(`/sub/${slug}`, null);
+export const getSub = (slug) => {
+    return get(`/sub/${slug}`, null);
 };
 
-export const postSub = async (token, data) => {
-    return await post("/sub", token, data);
+export const postSub = (token, data) => {
+    return post("/sub", token, data);
 };
 
-export const deleteSub = async (token, slug) => {
-    return await remove(`/sub/${slug}`, token);
+export const deleteSub = (token, slug) => {
+    return remove(`/sub/${slug}`, token);
 };
 
-export const updateSub = async (token, slug, data) => {
-    return await update(`/sub/${slug}`, token, data);
+export const updateSub = (token, slug, data) => {
+    return update(`/sub/${slug}`, token, data);
 };
