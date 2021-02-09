@@ -14,7 +14,7 @@ const UserNav = ({ keyNav, handleClick }) => {
         <Link to="/user/history">Order history</Link>
       </Menu.Item>
       <Menu.Item key="2" icon={<UserOutlined />}>
-        <Link to="/user/password">Personal information</Link>
+        <Link to="/user/user-info">Personal information</Link>
       </Menu.Item>
       <Menu.Item key="3" icon={<HeartOutlined />}>
         <Link to="/user/wishlist">Wishlist</Link>

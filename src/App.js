@@ -72,7 +72,7 @@ const App = () => {
         />
         <UserRoute
           exact
-          path="/user/password"
+          path="/user/user-info"
           component={() => <Dashboard keyDefault="2"></Dashboard>}
         />
         <UserRoute

@@ -26,3 +26,7 @@ export const showAverage = (p) => {
     return average;
   }
 };
+
+export const transformCascaderLeaf = (data) => data.map(el => ({ value: el.code, label: el.name, isLeaf: false }))
+
+export const transformCascader = (data) => data.map(el => ({ value: el.code, label: el.name }))

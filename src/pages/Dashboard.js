@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import History from "./user/History";
-import Password from "./user/Password";
+import UserInfo from "./user/UserInfo";
 import Wishlist from "./user/Wishlist";
 import UserNav from "../components/nav/UserNav";
 const Dashboard = ({ keyDefault }) => {
@@ -15,7 +15,7 @@ const Dashboard = ({ keyDefault }) => {
       </div>
       <div className="col-md-10">
         {keyNav === "1" && <History></History>}
-        {keyNav === "2" && <Password></Password>}
+        {keyNav === "2" && <UserInfo></UserInfo>}
         {keyNav === "3" && <Wishlist></Wishlist>}
       </div>
     </div>
