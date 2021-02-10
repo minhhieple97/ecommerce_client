@@ -7,7 +7,6 @@ import {
   getCategories,
   postCategory,
 } from "../../../services/api/category";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import CategoryForm from "../../../components/forms/CategoryForm";
 import LocalSearch from "../../../components/forms/LocalSearch";
@@ -17,25 +16,24 @@ const CategoryCreate = () => {
   const [categories, setCategories] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [loading, setLoading] = useState(false);
-  const user = useSelector((state) => state.user);
   useEffect(() => {
     const _getCategories = async () => {
       try {
-        setLoading(true)
-        const data = await getCategories(user.token);
+        setLoading(true);
+        const data = await getCategories();
         setCategories(data);
-        setLoading(false)
+        setLoading(false);
       } catch (error) {
-        setLoading(false)
+        setLoading(false);
         toast.error(error.response.data);
       }
     };
     _getCategories();
-  }, [user.token]);
+  }, []);
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const data = await postCategory(user.token, { name });
+      const data = await postCategory({ name });
       setLoading(false);
       toast.success(`"${data.name} is created.`);
       const newCategories = [data, ...categories];
@@ -51,16 +49,16 @@ const CategoryCreate = () => {
   const handleRemove = async (slug) => {
     try {
       if (window.confirm("Are you sure you want to delete ?")) {
-        setLoading(true)
-        await deleteCategory(user.token, slug);
+        setLoading(true);
+        await deleteCategory(slug);
         toast.success("Successfully deleted category.");
         const newCategories = [...categories].filter((el) => el.slug !== slug);
         setCategories(newCategories);
-        setLoading(false)
+        setLoading(false);
       }
     } catch (error) {
       let message = error.response.data ? error.response.data : error.message;
-      setLoading(false)
+      setLoading(false);
       toast.error(message);
     }
   };
@@ -76,35 +74,38 @@ const CategoryCreate = () => {
           <AdminNav />
         </div>
         <div className="col">
-          {loading ? <Spinner></Spinner> : <>
-            <CategoryForm
-              handleSubmit={handleSubmit}
-              loading={loading}
-              name={name}
-              handleOnChange={handleOnChange}
-            ></CategoryForm>
-            <LocalSearch
-              keyword={keyword}
-              handleSearch={handleSearch}
-            ></LocalSearch>
-            {categories.filter(searched(keyword)).map((el) => (
-              <div className="alert alert-secondary" key={el._id}>
-                {el.name}
-                <span className="btn btn-sm float-right">
-                  <DeleteOutlined
-                    onClick={() => handleRemove(el.slug)}
-                    className="text-danger"
-                  ></DeleteOutlined>
-                </span>
-                <Link to={`/admin/category/${el.slug}`}>
+          {loading ? (
+            <Spinner></Spinner>
+          ) : (
+            <>
+              <CategoryForm
+                handleSubmit={handleSubmit}
+                loading={loading}
+                name={name}
+                handleOnChange={handleOnChange}
+              ></CategoryForm>
+              <LocalSearch
+                keyword={keyword}
+                handleSearch={handleSearch}
+              ></LocalSearch>
+              {categories.filter(searched(keyword)).map((el) => (
+                <div className="alert alert-secondary" key={el._id}>
+                  {el.name}
                   <span className="btn btn-sm float-right">
-                    <EditOutlined className="text-warning"></EditOutlined>
+                    <DeleteOutlined
+                      onClick={() => handleRemove(el.slug)}
+                      className="text-danger"
+                    ></DeleteOutlined>
                   </span>
-                </Link>
-              </div>
-            ))}
-          </>}
-
+                  <Link to={`/admin/category/${el.slug}`}>
+                    <span className="btn btn-sm float-right">
+                      <EditOutlined className="text-warning"></EditOutlined>
+                    </span>
+                  </Link>
+                </div>
+              ))}
+            </>
+          )}
         </div>
       </div>
     </div>

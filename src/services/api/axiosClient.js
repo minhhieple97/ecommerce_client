@@ -2,6 +2,7 @@ import axios from "axios";
 import queryString from "query-string";
 const API_URL = process.env.REACT_APP_API;
 const axiosInstance = axios.create({
+  withCredentials: true,
   baseURL: API_URL,
   timeout: 20000,
   headers: { "Content-Type": "application/json" },
@@ -21,54 +22,33 @@ axiosInstance.interceptors.response.use(
     throw error;
   }
 );
-const post = (url, token, data) => {
-  const headers = {};
-  if (token) {
-    headers.authorization = `Bearer ${token}`;
-  }
+const post = (url, data) => {
   return axiosInstance({
     method: "POST",
     url,
     data,
-    headers,
   });
 };
 
-const get = (url, token, params) => {
-  const headers = {};
-  if (token) {
-    headers.authorization = `Bearer ${token}`;
-  }
-
+const get = (url, params) => {
   return axiosInstance({
     method: "GET",
     url,
-    headers,
     params,
   });
 };
-const remove = (url, token, params) => {
-  const headers = {};
-  if (token) {
-    headers.authorization = `Bearer ${token}`;
-  }
+const remove = (url, params) => {
   return axiosInstance({
     method: "DELETE",
     url,
-    headers,
     params,
   });
 };
 
-const update = (url, token, data) => {
-  const headers = {};
-  if (token) {
-    headers.authorization = `Bearer ${token}`;
-  }
+const update = (url, data) => {
   return axiosInstance({
     method: "PATCH",
     url,
-    headers,
     data,
   });
 };

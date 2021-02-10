@@ -3,12 +3,10 @@ import AdminNav from "../../../components/nav/AdminNav";
 import { toast } from "react-toastify";
 import Spinner from "../../../components/Spinner";
 import { deleteProduct, getProducts } from "../../../services/api/product";
-import { useSelector } from "react-redux";
 import AdminProductList from "../../../components/product/AdminProductList";
 
 const ProductsAdmin = () => {
   const [products, setProducts] = useState([]);
-  const user = useSelector((state) => state.user);
   const [loading, setLoading] = useState(false);
   const _getProducts = async () => {
     setLoading(true);
@@ -23,14 +21,14 @@ const ProductsAdmin = () => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         setLoading(true);
-        const data = await deleteProduct(user.token, slug);
+        const data = await deleteProduct(slug);
         await _getProducts();
         toast.success(`${data.title} is deleted.`);
       } catch (error) {
         console.log(error);
         toast.error(
           (error.response && error.response.data) ||
-          `Sorry something went wrong, please try again.`
+            `Sorry something went wrong, please try again.`
         );
       }
     }
@@ -45,12 +43,15 @@ const ProductsAdmin = () => {
           {loading ? (
             <Spinner></Spinner>
           ) : (
-              <>
-                <div className="row">
-                  <AdminProductList products={products} handleRemove={handleRemove} ></AdminProductList>
-                </div>
-              </>
-            )}
+            <>
+              <div className="row">
+                <AdminProductList
+                  products={products}
+                  handleRemove={handleRemove}
+                ></AdminProductList>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -1,7 +1,12 @@
-import { AUTH_FAIL, AUTH_LOGOUT, AUTH_START, AUTH_SUCCESS, SET_AUTH_REDIRECT_PATH } from "./actionType";
+import {
+  AUTH_FAIL,
+  AUTH_LOGOUT,
+  AUTH_START,
+  AUTH_SUCCESS,
+  SET_AUTH_REDIRECT_PATH,
+} from "./actionType";
 import { auth as authFirebase, googleAuthProvider } from "../../firebase";
-import firebase from "firebase";
-import { createOrUpdateUser } from "../../services/api/auth";
+import { createOrUpdateUser, sessionLogin } from "../../services/api/auth";
 
 export const authStart = (isGoogleLogin) => {
   return {
@@ -28,13 +33,12 @@ export const authFail = (data) => {
   };
 };
 export const logout = () => {
-  localStorage.removeItem("token");
   localStorage.removeItem("_id");
   localStorage.removeItem("email");
   localStorage.removeItem("name");
   localStorage.removeItem("role");
   localStorage.removeItem("expiresIn");
-  firebase.auth().signOut();
+  sessionLogin();
   return {
     type: AUTH_LOGOUT,
     payload: null,
@@ -52,8 +56,7 @@ export const auth = (email, password, isSignup, isGoogleLogin, url) => {
     try {
       let result;
       let data;
-      let expiresIn;
-      let tokenFirebase;
+      const expiresIn = Date.now() + 60 * 60 * 24 * 5 * 1000;
       if (isSignup) {
         dispatch(authStart(false));
         result = await authFirebase.signInWithEmailLink(email, url);
@@ -61,22 +64,18 @@ export const auth = (email, password, isSignup, isGoogleLogin, url) => {
           window.localStorage.removeItem("emailForRegistration");
           const user = authFirebase.currentUser;
           await user.updatePassword(password);
-          const { token, expirationTime } = await user.getIdTokenResult();
-          tokenFirebase = token;
-          data = await createOrUpdateUser(token);
-
-          expiresIn = new Date(expirationTime).valueOf();
+          const idToken = await user.getIdToken();
+          await sessionLogin({ idToken });
+          data = await createOrUpdateUser();
         }
       } else {
         if (isGoogleLogin) {
           dispatch(authStart(true));
           result = await authFirebase.signInWithPopup(googleAuthProvider);
           const { user } = result;
-          const { token, expirationTime } = await user.getIdTokenResult();
-          data = await createOrUpdateUser(token);
-          tokenFirebase = token;
-
-          expiresIn = new Date(expirationTime).valueOf();
+          const idToken = await user.getIdToken();
+          await sessionLogin({ idToken });
+          data = await createOrUpdateUser();
         } else {
           dispatch(authStart(false));
           result = await authFirebase.signInWithEmailAndPassword(
@@ -84,14 +83,11 @@ export const auth = (email, password, isSignup, isGoogleLogin, url) => {
             password
           );
           const { user } = result;
-          const { token, expirationTime } = await user.getIdTokenResult();
-          tokenFirebase = token;
-          data = await createOrUpdateUser(token);
-
-          expiresIn = new Date(expirationTime).valueOf();
+          const idToken = await user.getIdToken();
+          await sessionLogin({ idToken });
+          data = await createOrUpdateUser();
         }
       }
-      localStorage.setItem("token", tokenFirebase);
       localStorage.setItem("_id", data._id);
       localStorage.setItem("name", data.name);
       localStorage.setItem("role", data.role);
@@ -100,7 +96,6 @@ export const auth = (email, password, isSignup, isGoogleLogin, url) => {
       dispatch(
         authSuccess({
           email: data.email,
-          token: tokenFirebase,
           role: data.role,
           name: data.name,
           _id: data._id,
@@ -142,21 +137,19 @@ export const auth = (email, password, isSignup, isGoogleLogin, url) => {
 
 export const authCheckLogin = () => {
   return (dispatch) => {
-    const token = localStorage.getItem("token");
-    if (!token) dispatch(logout());
+    const _id = localStorage.getItem("_id");
+    if (!_id) dispatch(logout());
     else {
       const expirationTime = localStorage.getItem("expiresIn");
       if (expirationTime - Date.now() < 0) dispatch(logout());
       else {
         const _id = localStorage.getItem("_id");
         const email = localStorage.getItem("email");
-        const token = localStorage.getItem("token");
         const name = localStorage.getItem("name");
         const role = localStorage.getItem("role");
         dispatch(
           authSuccess({
             email,
-            token,
             role,
             name,
             _id,

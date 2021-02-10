@@ -27,7 +27,7 @@ const Cart = ({ history, match }) => {
   const handleCart = async () => {
     try {
       setLoading(true);
-      await postCart(user.token, { cart: cart.products });
+      await postCart({ cart: cart.products });
       setLoading(false);
       history.push("/checkout");
     } catch (error) {
@@ -40,7 +40,7 @@ const Cart = ({ history, match }) => {
     try {
       setLoading(true);
       dispatch(codCheckout());
-      await postCart(user.token, { cart: cart.products });
+      await postCart({ cart: cart.products });
       setLoading(false);
       history.push("/checkout");
     } catch (error) {
@@ -98,7 +98,7 @@ const Cart = ({ history, match }) => {
             <hr />
             Total: <b>${getTotal()}</b>
             <hr />
-            {user.token ? (
+            {user._id ? (
               <>
                 <button
                   disabled={!products.length}

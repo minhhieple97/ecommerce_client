@@ -1,7 +1,6 @@
 import { Spin } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
-import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import AdminNav from "../../../components/nav/AdminNav";
 import Spinner from "../../../components/Spinner";
@@ -17,7 +16,6 @@ const CreateCoupon = () => {
   const [discount, setDiscount] = useState("");
   const [loadingData, setLoadingData] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { user } = useSelector((state) => ({ ...state }));
   const [coupons, setCoupons] = useState([]);
   const _getCoupons = useCallback(async () => {
     setLoadingData(true);
@@ -34,7 +32,7 @@ const CreateCoupon = () => {
       setLoading(true);
       console.log({ name, expiry, discount, loading });
       const coupon = { name, expiry, discount };
-      await postCoupon(user.token, { coupon });
+      await postCoupon({ coupon });
       toast.success("Create discount success");
     } catch (error) {
       toast.error("Sorry something went wrong!");
@@ -45,7 +43,7 @@ const CreateCoupon = () => {
   const handleRemove = async (id) => {
     try {
       setLoading(true);
-      await removeCoupon(id, user.token);
+      await removeCoupon(id);
       _getCoupons();
       setLoading(false);
       toast.success("Remove coupon success");

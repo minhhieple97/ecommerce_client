@@ -16,19 +16,9 @@ const authStart = (state, { payload }) => {
   });
 };
 const authSuccess = (state, { payload }) => {
-  const {
-    email,
-    token,
-    role,
-    name,
-    _id,
-    loading,
-    loadingGoogle,
-    error,
-  } = payload;
+  const { email, role, name, _id, loading, loadingGoogle, error } = payload;
   return updateObject(state, {
     email,
-    token,
     role,
     name,
     _id,
@@ -39,7 +29,6 @@ const authSuccess = (state, { payload }) => {
 };
 const authLogout = (state) => {
   return updateObject(state, {
-    token: null,
     email: null,
     _id: null,
     role: null,
@@ -47,7 +36,7 @@ const authLogout = (state) => {
     loading: false,
     loadingGoogle: false,
     error: null,
-    authRedirect: null
+    authRedirect: null,
   });
 };
 const authFail = (state, { payload }) => {
@@ -59,7 +48,7 @@ const authFail = (state, { payload }) => {
 };
 const setAuthRedirectPath = (state, { payload }) => {
   return updateObject(state, {
-    authRedirect: payload
+    authRedirect: payload,
   });
 };
 const reducer = (state = INITIAL_STATE_USER, action) => {

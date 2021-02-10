@@ -57,9 +57,9 @@ export const codCheckout = () => {
     type: COD_CHECKOUT,
   };
 };
-export const emptyCart = (token) => async (dispatch) => {
+export const emptyCart = () => async (dispatch) => {
   dispatch(startCart());
-  await emptyUserCart(token);
+  await emptyUserCart();
   localStorage.removeItem("cart");
   dispatch({ type: EMPTY_CART });
   dispatch(finishCart());

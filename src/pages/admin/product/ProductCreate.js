@@ -6,7 +6,6 @@ import {
   getCategories,
   getCategoryBySubId,
 } from "../../../services/api/category";
-import { useSelector } from "react-redux";
 import {
   ENUM_BRANDS,
   ENUM_COLORS,
@@ -20,14 +19,13 @@ const ProductCreate = () => {
   const [loading, setLoading] = useState(false);
   const [listSub, setListSub] = useState([]);
   const [listCategory, setListCategory] = useState([]);
-  const user = useSelector((state) => state.user);
   useEffect(() => {
     const _getCategories = async () => {
-      const categories = await getCategories(user.token);
+      const categories = await getCategories();
       setListCategory([...categories]);
     };
     _getCategories();
-  }, [user.token]);
+  }, []);
   const handleSubmit = async () => {
     try {
       setLoading(true);
@@ -65,7 +63,7 @@ const ProductCreate = () => {
       if (!ENUM_BRANDS.includes(brand)) {
         throw new Error("Brand of product invalid.");
       }
-      await postProduct(user.token, product);
+      await postProduct(product);
       setLoading(false);
       toast.success("Create a successful product.");
       setProduct(INITIAL_STATE_PRODUCT);
@@ -77,7 +75,7 @@ const ProductCreate = () => {
   const handleRemoveImage = async (imageId) => {
     try {
       setLoading(true);
-      await deleteImage(user.token, imageId);
+      await deleteImage(imageId);
       const newImages = [...product.images].filter((el) => {
         return el.publicId !== imageId;
       });
@@ -104,7 +102,7 @@ const ProductCreate = () => {
           0,
           async (uri) => {
             try {
-              const data = await uploadImage({ image: uri }, user.token);
+              const data = await uploadImage({ image: uri });
               listImage.push(data);
               setProduct((prod) => ({
                 ...prod,
@@ -128,7 +126,7 @@ const ProductCreate = () => {
       const key = e.target.name;
       if (key === "category") {
         if (value !== "0") {
-          const subs = await getCategoryBySubId(user.token, value);
+          const subs = await getCategoryBySubId(value);
           setListSub(() => [...subs]);
           setProduct((prod) => ({
             ...prod,

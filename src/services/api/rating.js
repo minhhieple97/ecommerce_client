@@ -1,11 +1,11 @@
 const { get, post } = require("./axiosClient");
 
 export const getListRatingProduct = async (query) => {
-  return await get(`/rating/list`, null, { ...query });
+  return await get(`/rating/list`, { ...query });
 };
-export const getCurrentRatingProductOfUser = async (productId, token) => {
-  return await get(`/rating/current-user/${productId}`, token);
+export const getCurrentRatingProductOfUser = async (productId) => {
+  return await get(`/rating/current-user/${productId}`);
 };
-export const createOrUpdateRating = async (token, data) => {
-  return await post("/rating", token, data);
+export const createOrUpdateRating = async (data) => {
+  return await post("/rating", data);
 };

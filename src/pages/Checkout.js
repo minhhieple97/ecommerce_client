@@ -13,10 +13,15 @@ import { toast } from "react-toastify";
 import AddAddress from "../components/checkout/AddAddress";
 import ProductSummary from "../components/checkout/ProductSummary";
 import ApplyCoupon from "../components/checkout/ApplyCoupon";
-import { finishCart, startCart, applyCoupon, initCart } from "../store/actions/cart";
+import {
+  finishCart,
+  startCart,
+  applyCoupon,
+  initCart,
+} from "../store/actions/cart";
 const Checkout = ({ history }) => {
   const dispatch = useDispatch();
-  const { user, cart } = useSelector((state) => state);
+  const { cart } = useSelector((state) => state);
   const [products, setProducts] = useState([]);
   const [total, setTotal] = useState(0);
   const [coupon, setCoupon] = useState("");
@@ -26,7 +31,7 @@ const Checkout = ({ history }) => {
   const [totalAfterDiscount, setTotalAfterDiscount] = useState(0);
   const _getCart = useCallback(async () => {
     try {
-      const data = await getCart(user.token);
+      const data = await getCart();
       if (data.products && data.cartTotal) {
         const { products, cartTotal } = data;
         setProducts([...products]);
@@ -37,14 +42,14 @@ const Checkout = ({ history }) => {
       console.log(error.message);
       setLoadingData(false);
     }
-  }, [user.token]);
+  }, []);
   useEffect(() => {
     _getCart();
   }, [_getCart]);
   const handleAddress = async () => {
     try {
       dispatch(startCart());
-      await addAddress(user.token, { address });
+      await addAddress({ address });
       toast.success("Save address success.");
       dispatch(finishCart());
       setHasAddress(true);
@@ -53,7 +58,7 @@ const Checkout = ({ history }) => {
     }
   };
   const handleEmptyCart = () => {
-    dispatch(emptyCart(user.token));
+    dispatch(emptyCart());
     setProducts([]);
     setTotalAfterDiscount(0);
     setCoupon("");
@@ -63,7 +68,7 @@ const Checkout = ({ history }) => {
   const applyDiscountCoupon = async (coupon) => {
     try {
       dispatch(startCart());
-      const { totalAfterDiscount } = await applyCouponApi(user.token, {
+      const { totalAfterDiscount } = await applyCouponApi({
         coupon,
       });
       setTotalAfterDiscount(totalAfterDiscount);
@@ -77,93 +82,98 @@ const Checkout = ({ history }) => {
   };
   const handleCreateCashOrder = async () => {
     try {
-      dispatch(startCart())
-      await createCashOrder(user.token, { cod: cart.cod, couponApplied: cart.couponApply });
+      dispatch(startCart());
+      await createCashOrder({
+        cod: cart.cod,
+        couponApplied: cart.couponApply,
+      });
       dispatch(finishCart());
-      dispatch(emptyCart(user.token));
+      dispatch(emptyCart());
       dispatch(initCart());
-      history.push('/user/history');
+      history.push("/user/history");
     } catch (error) {
-      dispatch(finishCart())
+      dispatch(finishCart());
       toast.error(error.response ? error.response.data : error.message);
-
     }
-  }
+  };
   return (
     <Spin spinning={cart.loading}>
       <div className="row">
         {loadingData ? (
           <Spinner></Spinner>
         ) : (
-            <>
-              <div className="col-md-6">
-                <h4>Delivery Address</h4>
-                <br />
-                <br />
-                <AddAddress
-                  address={address}
-                  setAddress={setAddress}
-                  handleAddress={handleAddress}
-                ></AddAddress>
-                <hr />
-                <h4>Got Coupon</h4>
-                <br />
-                <ApplyCoupon
-                  coupon={coupon}
-                  disabledBtn={products.length}
-                  setCoupon={setCoupon}
-                  applyDiscountCoupon={applyDiscountCoupon}
-                ></ApplyCoupon>
-              </div>
-              <div className="col-md-6">
-                <h4>Order Summary</h4>
-                <hr />
-                <h1>{total}</h1>
-                <hr />
-                <p>Products: {products.length}</p>
-                <hr />
-                <ProductSummary products={products}></ProductSummary>
-                <hr />
-                <p>Cart Total : ${total}</p>
-                {totalAfterDiscount > 0 && (
-                  <>
-                    <p className="bg-success p-2">
-                      Discount applied!
-                      <br />
-                      Total payable: ${totalAfterDiscount}
-                    </p>
-                  </>
-                )}
-                <div className="row">
-                  <div className="col-md-6">
-                    {cart.cod ? <button
+          <>
+            <div className="col-md-6">
+              <h4>Delivery Address</h4>
+              <br />
+              <br />
+              <AddAddress
+                address={address}
+                setAddress={setAddress}
+                handleAddress={handleAddress}
+              ></AddAddress>
+              <hr />
+              <h4>Got Coupon</h4>
+              <br />
+              <ApplyCoupon
+                coupon={coupon}
+                disabledBtn={products.length}
+                setCoupon={setCoupon}
+                applyDiscountCoupon={applyDiscountCoupon}
+              ></ApplyCoupon>
+            </div>
+            <div className="col-md-6">
+              <h4>Order Summary</h4>
+              <hr />
+              <h1>{total}</h1>
+              <hr />
+              <p>Products: {products.length}</p>
+              <hr />
+              <ProductSummary products={products}></ProductSummary>
+              <hr />
+              <p>Cart Total : ${total}</p>
+              {totalAfterDiscount > 0 && (
+                <>
+                  <p className="bg-success p-2">
+                    Discount applied!
+                    <br />
+                    Total payable: ${totalAfterDiscount}
+                  </p>
+                </>
+              )}
+              <div className="row">
+                <div className="col-md-6">
+                  {cart.cod ? (
+                    <button
                       disabled={!hasAddress || !products.length}
                       className="btn btn-primary"
                       onClick={handleCreateCashOrder}
                     >
                       Place Order
-                  </button> : <button
-                        disabled={!hasAddress || !products.length}
-                        className="btn btn-primary"
-                        onClick={() => history.push("/payment")}
-                      >
-                        Place Order
-                  </button>}
-
-                  </div>
-                  <div className="col-md-6">
+                    </button>
+                  ) : (
                     <button
-                      disabled={!products.length}
-                      onClick={handleEmptyCart}
+                      disabled={!hasAddress || !products.length}
                       className="btn btn-primary"
+                      onClick={() => history.push("/payment")}
                     >
-                      Empty Cart
+                      Place Order
+                    </button>
+                  )}
+                </div>
+                <div className="col-md-6">
+                  <button
+                    disabled={!products.length}
+                    onClick={handleEmptyCart}
+                    className="btn btn-primary"
+                  >
+                    Empty Cart
                   </button>
-                  </div>
                 </div>
               </div>
-            </>
-          )}
+            </div>
+          </>
+        )}
       </div>
     </Spin>
   );

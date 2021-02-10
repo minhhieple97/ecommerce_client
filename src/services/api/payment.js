@@ -1,4 +1,4 @@
 const { post } = require("./axiosClient");
-export const createPaymentIntent = async (token, data) => {
-  return await post(`/payment/create-payment-intent`, token, data);
+export const createPaymentIntent = async (data) => {
+  return await post(`/payment/create-payment-intent`, data);
 };

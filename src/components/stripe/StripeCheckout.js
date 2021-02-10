@@ -8,8 +8,7 @@ import { DollarOutlined, CheckOutlined } from "@ant-design/icons";
 import { createOrder } from "../../services/api/user";
 import { emptyCart, initCart } from "../../store/actions";
 const StripeCheckout = () => {
-  const history = useHistory()
-  const user = useSelector((state) => state.user);
+  const history = useHistory();
   const dispatch = useDispatch();
   const { couponApply } = useSelector((state) => state.cart);
   const [succeeded, setSucceeded] = useState(false);
@@ -27,15 +26,10 @@ const StripeCheckout = () => {
   const _createPayment = useCallback(async () => {
     try {
       if (!succeeded) {
-        const data = await createPaymentIntent(user.token, {
+        const data = await createPaymentIntent({
           couponApply,
         });
-        const {
-          clientSecret,
-          cartTotal,
-          totalAfterDiscount,
-          payable,
-        } = data;
+        const { clientSecret, cartTotal, totalAfterDiscount, payable } = data;
         setLoading(false);
         setClientSecret(clientSecret);
         setCartTotal(cartTotal);
@@ -45,9 +39,9 @@ const StripeCheckout = () => {
     } catch (error) {
       console.log(error.message);
       setLoading(false);
-      history.push('/')
+      history.push("/");
     }
-  }, [user.token, couponApply, succeeded, history]);
+  }, [couponApply, succeeded, history]);
 
   const cardStyle = {
     style: {
@@ -91,8 +85,8 @@ const StripeCheckout = () => {
         setProcessing(false);
         setLoading(false);
       } else {
-        await createOrder(user.token, { stripeResponse: payload });
-        dispatch(emptyCart(user.token));
+        await createOrder({ stripeResponse: payload });
+        dispatch(emptyCart());
         dispatch(initCart());
         setError(null);
         setProcessing(false);
@@ -114,8 +108,8 @@ const StripeCheckout = () => {
           {couponApply && totalAfterDiscount !== undefined ? (
             <p className="alert alert-success">{`Total after discount: $${totalAfterDiscount}`}</p>
           ) : (
-              <p className="alert alert-danger">No coupon applied</p>
-            )}
+            <p className="alert alert-danger">No coupon applied</p>
+          )}
         </div>
       )}
       <div className="text-center pb-5">

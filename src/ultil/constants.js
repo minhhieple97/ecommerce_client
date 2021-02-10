@@ -1,5 +1,4 @@
 export const INITIAL_STATE_USER = {
-  token: null,
   _id: null,
   error: null,
   loading: false,

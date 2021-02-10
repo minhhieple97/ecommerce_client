@@ -2,21 +2,17 @@ import React, { useCallback, useEffect, useState } from "react";
 import UserNav from "../../components/nav/UserNav";
 import { toast } from "react-toastify";
 import { getOrders } from "../../services/api/user";
-import { useSelector } from "react-redux";
 import Spinner from "../../components/Spinner";
-import {
-  PDFDownloadLink,
-} from "@react-pdf/renderer";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import ShowPaymentInfo from "../../components/cards/ShowPaymentInfo";
 import Invoice from "../../components/Invoice";
 const History = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const user = useSelector((state) => state.user);
   const _getOrders = useCallback(async () => {
     try {
-      const orders = await getOrders(user.token);
+      const orders = await getOrders();
       setOrders(orders);
       setLoading(false);
     } catch (error) {
@@ -24,15 +20,13 @@ const History = () => {
       console.log(error);
       toast.error(error.message);
     }
-  }, [user.token]);
+  }, []);
   useEffect(() => {
     _getOrders();
   }, [_getOrders]);
   const showDownloadLink = (order) => (
     <PDFDownloadLink
-      document={
-        <Invoice order={order} ></Invoice>
-      }
+      document={<Invoice order={order}></Invoice>}
       fileName="invoice.pdf"
       className="btn btn-sm btn-block btn-outline-primary"
     >
@@ -69,10 +63,10 @@ const History = () => {
                       style={{ color: "green" }}
                     ></CheckCircleOutlined>
                   ) : (
-                      <CloseCircleOutlined
-                        style={{ color: "red" }}
-                      ></CloseCircleOutlined>
-                    )}
+                    <CloseCircleOutlined
+                      style={{ color: "red" }}
+                    ></CloseCircleOutlined>
+                  )}
                 </td>
               </tr>
             );
@@ -98,22 +92,22 @@ const History = () => {
       {loading ? (
         <Spinner></Spinner>
       ) : (
-          <>
-            <div className="row">
-              <div className="col-md-2">
-                <UserNav></UserNav>
-              </div>
-              <div className="col-md-10 text-center">
-                <h4 style={{ marginTop: "10px" }} >
-                  {orders.length > 0
-                    ? "User purchase orders"
-                    : "No purchase orders"}
-                </h4>
-                {showPurchaseOrders()}
-              </div>
+        <>
+          <div className="row">
+            <div className="col-md-2">
+              <UserNav></UserNav>
             </div>
-          </>
-        )}
+            <div className="col-md-10 text-center">
+              <h4 style={{ marginTop: "10px" }}>
+                {orders.length > 0
+                  ? "User purchase orders"
+                  : "No purchase orders"}
+              </h4>
+              {showPurchaseOrders()}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

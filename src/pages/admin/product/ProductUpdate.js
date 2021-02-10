@@ -6,7 +6,6 @@ import {
   getCategories,
   getCategoryBySubId,
 } from "../../../services/api/category";
-import { useSelector } from "react-redux";
 import {
   ENUM_BRANDS,
   ENUM_COLORS,
@@ -17,26 +16,24 @@ import { getProduct, updateProduct } from "../../../services/api/product";
 import { deleteImage, uploadImage } from "../../../services/api/upload";
 import Spinner from "../../../components/Spinner";
 const ProductUpdate = ({ match, history }) => {
-  const user = useSelector((state) => state.user);
   const [loading, setLoading] = useState(false);
   const [loadingUpload, setLoadingUpload] = useState(false);
   const [categories, setCategories] = useState([]);
   const [subs, setSubs] = useState([]);
-  const [initSubs, setInitSubs] = useState([])
+  const [initSubs, setInitSubs] = useState([]);
   const [product, setProduct] = useState({ ...INITIAL_STATE_PRODUCT });
   const slug = match.params.slug;
   useEffect(() => {
     const _getInitialData = async () => {
       setLoading(true);
       const [product, categories] = await Promise.all([
-        getProduct(slug, user.token),
-        getCategories(user.token),
+        getProduct(slug),
+        getCategories(),
       ]);
       if (Object.keys(product).length === 0) {
         history.push("/admin/product");
-      }
-      else {
-        const subs = await getCategoryBySubId(user.token, product.category._id);
+      } else {
+        const subs = await getCategoryBySubId(product.category._id);
         setLoading(false);
         setProduct((oldState) => ({ ...oldState, ...product }));
         setSubs([...subs]);
@@ -44,12 +41,12 @@ const ProductUpdate = ({ match, history }) => {
           res.push(el._id);
           return res;
         }, []);
-        setInitSubs([...initSubs])
+        setInitSubs([...initSubs]);
         setCategories(categories);
       }
     };
     _getInitialData();
-  }, [user.token, history, slug]);
+  }, [history, slug]);
   const handleFileChange = (e) => {
     const files = e.target.files;
     const listImage = [];
@@ -65,7 +62,7 @@ const ProductUpdate = ({ match, history }) => {
           0,
           async (uri) => {
             try {
-              const data = await uploadImage({ image: uri }, user.token);
+              const data = await uploadImage({ image: uri });
               listImage.push(data);
               setProduct((prod) => ({
                 ...prod,
@@ -84,7 +81,7 @@ const ProductUpdate = ({ match, history }) => {
   };
   const handleChangeSubs = (value) => {
     setProduct((prod) => ({ ...prod, subs: [...value] }));
-    setInitSubs([...value])
+    setInitSubs([...value]);
   };
   const handleSubmit = async () => {
     try {
@@ -123,10 +120,10 @@ const ProductUpdate = ({ match, history }) => {
       if (!ENUM_BRANDS.includes(brand)) {
         throw new Error("Brand of product invalid.");
       }
-      await updateProduct(user.token, slug, product);
+      await updateProduct(slug, product);
       // setLoading(false);
       toast.success("Update a successful product.");
-      history.push('/admin/product/list')
+      history.push("/admin/product/list");
     } catch (error) {
       toast.error((error.response && error.response.data) || error.message);
       setLoading(false);
@@ -135,7 +132,7 @@ const ProductUpdate = ({ match, history }) => {
   const handleRemoveImage = async (imageId) => {
     try {
       setLoadingUpload(true);
-      await deleteImage(user.token, imageId);
+      await deleteImage(imageId);
       const newImages = [...product.images].filter((el) => {
         return el.publicId !== imageId;
       });
@@ -153,7 +150,7 @@ const ProductUpdate = ({ match, history }) => {
       const key = e.target.name;
       if (key === "category") {
         if (value !== "0") {
-          const subs = await getCategoryBySubId(user.token, value);
+          const subs = await getCategoryBySubId(value);
           setSubs(() => [...subs]);
           setProduct((prod) => ({
             ...prod,
@@ -167,7 +164,7 @@ const ProductUpdate = ({ match, history }) => {
             subs: [],
           }));
         }
-        setInitSubs([])
+        setInitSubs([]);
       } else {
         setProduct((prod) => ({
           ...prod,
@@ -190,24 +187,24 @@ const ProductUpdate = ({ match, history }) => {
           {loading ? (
             <Spinner></Spinner>
           ) : (
-              <React.Fragment>
-                <hr></hr>
-                <ProductForm
-                  product={product}
-                  handleRemoveImage={handleRemoveImage}
-                  handleChange={handleChange}
-                  loading={loading}
-                  handleSubmit={handleSubmit}
-                  listSub={subs}
-                  handleChangeSubs={handleChangeSubs}
-                  listCategory={categories}
-                  handleFileChange={handleFileChange}
-                  initSubs={initSubs}
-                  loadingUpload={loadingUpload}
-                  isUpdate
-                ></ProductForm>
-              </React.Fragment>
-            )}
+            <React.Fragment>
+              <hr></hr>
+              <ProductForm
+                product={product}
+                handleRemoveImage={handleRemoveImage}
+                handleChange={handleChange}
+                loading={loading}
+                handleSubmit={handleSubmit}
+                listSub={subs}
+                handleChangeSubs={handleChangeSubs}
+                listCategory={categories}
+                handleFileChange={handleFileChange}
+                initSubs={initSubs}
+                loadingUpload={loadingUpload}
+                isUpdate
+              ></ProductForm>
+            </React.Fragment>
+          )}
         </div>
       </div>
     </div>

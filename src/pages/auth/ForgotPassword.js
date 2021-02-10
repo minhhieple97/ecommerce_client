@@ -10,7 +10,7 @@ const ForgotPassword = ({ history }) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const user = useSelector((state) => state.user);
-  if (user.token) {
+  if (user._id) {
     return <Redirect to="/"></Redirect>;
   }
   const handleSubmit = async () => {

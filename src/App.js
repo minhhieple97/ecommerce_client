@@ -49,7 +49,7 @@ const App = () => {
     <Suspense
       fallback={
         <div className="col text-center p-5">
-          __ React Redux  <LoadingOutlined></LoadingOutlined> E-commerce __
+          __ React Redux <LoadingOutlined></LoadingOutlined> E-commerce __
         </div>
       }
     >
