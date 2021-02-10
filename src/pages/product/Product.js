@@ -8,7 +8,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { setAuthRedirectPath } from "../../store/actions";
 import { Spin } from "antd";
 import ProductList from "../../components/product/ProductList";
-import { addToWishlist } from "../../services/api/user";
+import {
+  addToWishlist,
+  checkProductInWishlist,
+  removeProductInWishlist,
+} from "../../services/api/wishlist";
 import {
   createOrUpdateRating,
   getCurrentRatingProductOfUser,
@@ -20,6 +24,7 @@ const Product = ({ match, history }) => {
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [average, setAverage] = useState(null);
+  const [flagWishlist, setFlagWishlist] = useState(false);
   const [loadingRatings, setLoadingRatings] = useState(false);
   const [ratingsData, setRatingsData] = useState({
     ratings: [],
@@ -59,7 +64,11 @@ const Product = ({ match, history }) => {
           if (product.averageStar) setAverage(product.averageStar);
           setListRelated(listRelated);
           if (user._id) {
-            const { rating } = await getCurrentRatingProductOfUser(product._id);
+            const [{ rating }, { flag }] = await Promise.all([
+              getCurrentRatingProductOfUser(product._id),
+              checkProductInWishlist(product._id),
+            ]);
+            setFlagWishlist(flag);
             if (rating) {
               setStar(rating.star);
               setReview(rating.review);
@@ -102,7 +111,6 @@ const Product = ({ match, history }) => {
       if (review) body.review = review;
       const { average } = await createOrUpdateRating(body);
       setStar(star);
-      console.log({ average });
       setReview(review);
       setAverage(average);
       const { ratings, totalPages, page, limit } = await getListRatingProduct({
@@ -124,20 +132,23 @@ const Product = ({ match, history }) => {
       );
     }
   };
-  const handleAddToWishlist = async () => {
+  const handleChangeWishlist = async (flag) => {
     try {
       if (user._id) {
         setLoadingSubmit(true);
-        await addToWishlist({ productId: product._id });
-        toast.success("Added to wishlist");
+        if (flag) await addToWishlist({ productId: product._id });
+        else await removeProductInWishlist({ product: [product._id] });
+        setFlagWishlist(flag);
+        const message = flag ? "Added to wishlist." : "Deleted to wishlist.";
+        toast.success(message);
         setLoadingSubmit(false);
-        history.push("/user/wishlist");
       } else {
         dispatch(setAuthRedirectPath(match.url));
         history.push("/login");
       }
     } catch (error) {
       setLoadingSubmit(false);
+      toast.success(error.message);
     }
   };
   const handleChangeReview = async (e) => {
@@ -166,6 +177,7 @@ const Product = ({ match, history }) => {
           <Spin spinning={loadingSubmit}>
             <div className="row pt-4">
               <ProductDetail
+                flagWishlist={flagWishlist}
                 average={average}
                 loadingRatings={loadingRatings}
                 ratingsData={ratingsData}
@@ -178,7 +190,7 @@ const Product = ({ match, history }) => {
                 visible={visible}
                 handleVisible={handleVisible}
                 handleSubmitRating={handleSubmitRating}
-                handleAddToWishlist={handleAddToWishlist}
+                handleChangeWishlist={handleChangeWishlist}
                 handleChangeReview={handleChangeReview}
               ></ProductDetail>
             </div>

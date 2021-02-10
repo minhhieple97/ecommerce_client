@@ -1,11 +1,11 @@
 import { Comment, Tooltip, List } from "antd";
 import moment from "moment";
 import Rate from "../rate/Rate";
-const Reviews = ({ content }) => {
+const Reviews = ({ content, totalRating }) => {
   return (
     <List
       className="comment-list"
-      header={`The product has ${content.length} reviews.`}
+      header={`The product has ${totalRating} reviews.`}
       itemLayout="horizontal"
       dataSource={content}
       renderItem={(item) => (

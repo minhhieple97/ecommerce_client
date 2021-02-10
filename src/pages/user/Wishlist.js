@@ -1,160 +1,114 @@
-import { DeleteOutlined } from "@ant-design/icons";
-import { Spin } from "antd";
+import { Card, Spin } from "antd";
+import { Table, Button } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import UserNav from "../../components/nav/UserNav";
 import Spinner from "../../components/Spinner";
-import { getWishlist, removeWishlist } from "../../services/api/user";
-import { List, Avatar, Space } from "antd";
-import { MessageOutlined, LikeOutlined, StarOutlined } from "@ant-design/icons";
-const listData = [];
-for (let i = 0; i < 23; i++) {
-  listData.push({
-    href: "https://ant.design",
-    title: `ant design part ${i}`,
-    avatar: "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
-    description:
-      "Ant Design, a design language for background applications, is refined by Ant UED Team.",
-    content:
-      "We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.",
-  });
-}
-
-const IconText = ({ icon, text }) => (
-  <Space>
-    {React.createElement(icon)}
-    {text}
-  </Space>
-);
-
+import { Image } from "antd";
+import {
+  getWishlist,
+  removeProductInWishlist,
+} from "../../services/api/wishlist";
+const columns = [
+  {
+    title: "Title",
+    dataIndex: "title",
+  },
+  {
+    title: "Price",
+    dataIndex: "price",
+  },
+  {
+    title: "Brand",
+    dataIndex: "brand",
+  },
+  {
+    title: "Color",
+    dataIndex: "color",
+  },
+  {
+    title: "Status",
+    dataIndex: "status",
+  },
+  {
+    title: "Preview",
+    dataIndex: "preview",
+  },
+];
 const Wishlist = () => {
-  const [wishlist, setWishlist] = useState([]);
+  const [wishlistData, setWishlistData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const hasSelected = selectedRowKeys.length > 0;
   const _getWishlist = useCallback(async () => {
     try {
-      const { userWishlist } = await getWishlist();
-      setWishlist(userWishlist.wishlist);
+      const { wishlist } = await getWishlist();
+      const wishlistProduct = wishlist.map((el) => {
+        el.product.preview = (
+          <Image width={50} src={el.product.images[0].imageUrl} />
+        );
+        el.product.key = el.product._id;
+        return el.product;
+      });
+      setWishlistData(wishlistProduct);
       setLoading(false);
     } catch (error) {
+      console.log(error);
       setLoading(false);
     }
   }, []);
   useEffect(() => {
     _getWishlist();
   }, [_getWishlist]);
-  const handleRemoveFromWishlist = async (id) => {
+  const handleRemoveFromWishlist = async () => {
     try {
       setLoadingSubmit(true);
-      await removeWishlist(id);
-      const newWishlist = wishlist.filter((el) => el._id !== id);
-      setWishlist(newWishlist);
+      await removeProductInWishlist({ product: selectedRowKeys });
+      // const newWishlist = wishlistData.filter((el) => el._id !== id);
+      // setWishlistData(newWishlist);
       setLoadingSubmit(false);
     } catch (error) {
       setLoadingSubmit(false);
     }
   };
-  const showWishlist = () => {
-    return (
-      <>
-        <h4>Wishlist</h4>
-        {wishlist.map((p) => (
-          <div key={p._id} className="alert alert-secondary">
-            <Link to={`/product/${p.slug}`}>{p.title}</Link>
-            <span
-              onClick={() => handleRemoveFromWishlist(p._id)}
-              className="btn btn-sm float-right"
-            >
-              <DeleteOutlined className="text-danger" />
-            </span>
-          </div>
-        ))}
-      </>
-    );
+  const onSelectChange = (selectedRowKeys) => {
+    console.log("selectedRowKeys changed: ", selectedRowKeys);
+    setSelectedRowKeys(selectedRowKeys);
   };
-  // return (
-  //   <div className="container-fluid">
-  //     {loading ? (
-  //       <Spinner></Spinner>
-  //     ) : (
-  //         <Spin spinning={loadingSubmit}>
-  //           <div className="row">
-  //             <div className="col-md-2">
-  //               <UserNav></UserNav>
-  //             </div>
-  //             <div className="col-md-10">
-  //               {wishlist.length > 0 ? showWishlist() : <h4 style={{ marginTop: "10px" }} className="text-center" >No wish list found</h4>}
-  //             </div>
-  //           </div>
-  //         </Spin>
-  //       )}
-  //   </div>
-  // );
+  console.log({ selectedRowKeys });
   return (
-    <div className="container-fluid">
+    <>
       {loading ? (
         <Spinner></Spinner>
       ) : (
         <Spin spinning={loadingSubmit}>
-          <div className="row">
-            <div className="col-md-2">
-              {false && showWishlist()}
-              <UserNav></UserNav>
+          <Card>
+            <div>
+              <Button
+                style={{ marginBottom: "10px" }}
+                type="primary"
+                disabled={!hasSelected}
+                loading={loading}
+                onClick={handleRemoveFromWishlist}
+              >
+                Remove
+              </Button>
+              <span style={{ marginLeft: 8 }}>
+                {hasSelected ? `Selected ${selectedRowKeys.length} items` : ""}
+              </span>
             </div>
-            <div className="col-md-10">
-              <List
-                itemLayout="vertical"
-                size="large"
-                pagination={{
-                  onChange: (page) => {
-                    console.log(page);
-                  },
-                  pageSize: 3,
-                }}
-                load
-                dataSource={listData}
-                renderItem={(item) => (
-                  <List.Item
-                    key={item.title}
-                    actions={[
-                      <IconText
-                        icon={StarOutlined}
-                        text="156"
-                        key="list-vertical-star-o"
-                      />,
-                      <IconText
-                        icon={LikeOutlined}
-                        text="156"
-                        key="list-vertical-like-o"
-                      />,
-                      <IconText
-                        icon={MessageOutlined}
-                        text="2"
-                        key="list-vertical-message"
-                      />,
-                    ]}
-                    extra={
-                      <img
-                        width={272}
-                        alt="logo"
-                        src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-                      />
-                    }
-                  >
-                    <List.Item.Meta
-                      avatar={<Avatar src={item.avatar} />}
-                      title={<a href={item.href}>{item.title}</a>}
-                      description={item.description}
-                    />
-                    {item.content}
-                  </List.Item>
-                )}
-              />
-            </div>
-          </div>
+            <Table
+              rowSelection={{
+                selectedRowKeys,
+                onChange: onSelectChange,
+              }}
+              locale={{ emptyText: <strong>Wishlist is empty</strong> }}
+              columns={columns}
+              dataSource={wishlistData}
+            />
+          </Card>
         </Spin>
       )}
-    </div>
+    </>
   );
 };
 export default Wishlist;

@@ -23,6 +23,6 @@ export const ratingProduct = async (id, data) => {
   return await update(`/product/rating/${id}`, data);
 };
 
-export const getRelated = async (slug) => {
-  return await get(`/product/related/${slug}`);
+export const getRelated = (slug) => {
+  return get(`/product/related/${slug}`);
 };

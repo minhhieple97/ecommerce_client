@@ -71,6 +71,7 @@ const Shop = () => {
         if ("shipping" in value && value.shipping) {
           query.shipping = value.shipping;
         }
+
         const { products } = await getProducts(query);
         setProducts(products);
         setLoading(false);
@@ -160,6 +161,7 @@ const Shop = () => {
     color,
     shipping,
   ]);
+  console.log({ categoryIds })
   const handleStarClick = (num) => {
     setStar(num);
     setAllRatings(false);
@@ -356,16 +358,16 @@ const Shop = () => {
           {loading ? (
             <Spinner></Spinner>
           ) : (
-            <>
-              <h4>Products</h4>
-              {products.length < 1 && (
-                <h4 className="text-center">No products found</h4>
-              )}
-              <div className="row pb-5">
-                <ProductList products={products}></ProductList>
-              </div>
-            </>
-          )}
+              <>
+                <h4>Products</h4>
+                {products.length < 1 && (
+                  <h4 className="text-center">No products found</h4>
+                )}
+                <div className="row pb-5">
+                  <ProductList products={products}></ProductList>
+                </div>
+              </>
+            )}
         </div>
       </div>
     </div>

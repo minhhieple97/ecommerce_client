@@ -1,4 +1,4 @@
-import { HeartOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { DeleteOutlined, HeartOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Card, Comment, Spin, Tabs, Tooltip } from "antd";
 import React, { useState } from "react";
 import { Carousel } from "react-responsive-carousel";
@@ -23,11 +23,12 @@ const ProductDetail = ({
   star,
   review,
   handleSubmitRating,
-  handleAddToWishlist,
+  handleChangeWishlist,
   handleChangeReview,
   ratingsData,
   handlePaginationRatings,
   loadingRatings,
+  flagWishlist
 }) => {
   const { images, title, description, _id, quantity } = product;
   const { ratings, page, totalPages } = ratingsData;
@@ -72,19 +73,26 @@ const ProductDetail = ({
           </TabPane>
           <TabPane tab="Reviews" key="2">
             <div className="container">
-              {ratings && ratings.length > 0 ? <Spin spinning={loadingRatings}>
-                <div className="row">
-                  <Ratings content={ratings}></Ratings>
-                </div>
-                <div className="row" style={{ marginTop: "30px" }}>
-                  <PaginationList
-                    page={page}
-                    totalPages={totalPages}
-                    handleOnChange={handlePaginationRatings}
-                    simple={true}
-                  />
-                </div>
-              </Spin> : <p>This product has no reviews yet.</p>}
+              {ratings && ratings.length > 0 ? (
+                <Spin spinning={loadingRatings}>
+                  <div className="row">
+                    <Ratings
+                      totalRating={product.totalRating}
+                      content={ratings}
+                    ></Ratings>
+                  </div>
+                  <div className="row" style={{ marginTop: "30px" }}>
+                    <PaginationList
+                      page={page}
+                      totalPages={totalPages}
+                      handleOnChange={handlePaginationRatings}
+                      simple={true}
+                    />
+                  </div>
+                </Spin>
+              ) : (
+                  <p>This product has no reviews yet.</p>
+                )}
             </div>
           </TabPane>
           <TabPane tab="More" key="3">
@@ -107,9 +115,11 @@ const ProductDetail = ({
                 <br /> {quantity > 0 ? "Add to Cart" : "Out of Stock"}
               </div>
             </Tooltip>,
-            <div onClick={() => handleAddToWishlist()}>
-              <HeartOutlined className="text-info"></HeartOutlined> <br />
-              Add to Wishlist
+            <div onClick={() => handleChangeWishlist(!flagWishlist)}>
+              {!flagWishlist ? <><HeartOutlined className="text-info"></HeartOutlined> <br />
+              Add to Wishlist</> : <><DeleteOutlined></DeleteOutlined><br />
+              Remove to Wishlist</>}
+
             </div>,
             <RatingModal
               user={user}

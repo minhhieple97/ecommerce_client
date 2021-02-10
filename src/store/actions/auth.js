@@ -6,7 +6,11 @@ import {
   SET_AUTH_REDIRECT_PATH,
 } from "./actionType";
 import { auth as authFirebase, googleAuthProvider } from "../../firebase";
-import { createOrUpdateUser, sessionLogin } from "../../services/api/auth";
+import {
+  createOrUpdateUser,
+  sessionLogin,
+  sessionLogout,
+} from "../../services/api/auth";
 
 export const authStart = (isGoogleLogin) => {
   return {
@@ -38,7 +42,7 @@ export const logout = () => {
   localStorage.removeItem("name");
   localStorage.removeItem("role");
   localStorage.removeItem("expiresIn");
-  sessionLogin();
+  // sessionLogout();
   return {
     type: AUTH_LOGOUT,
     payload: null,
