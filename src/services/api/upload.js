@@ -1,9 +1,9 @@
 const { post, remove } = require("./axiosClient");
 
-export const uploadImage = async (data) => {
-  return await post("/upload/image", { ...data });
+export const uploadImage = (data) => {
+  return post("/upload/image", { ...data });
 };
 
-export const deleteImage = async (imageId) => {
-  return await remove(`/upload/image/${imageId}`);
+export const deleteImage = (imageId) => {
+  return remove(`/upload/image/${imageId}`);
 };

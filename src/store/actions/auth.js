@@ -36,21 +36,25 @@ export const authFail = (data) => {
     payload: data,
   };
 };
-export const logout = () => {
-  localStorage.removeItem("_id");
-  localStorage.removeItem("email");
-  localStorage.removeItem("name");
-  localStorage.removeItem("role");
-  localStorage.removeItem("expiresIn");
-  // sessionLogout();
-  return {
-    type: AUTH_LOGOUT,
-    payload: null,
-  };
+export const logout = () => async (dispatch) => {
+  try {
+    localStorage.removeItem("_id");
+    localStorage.removeItem("email");
+    localStorage.removeItem("name");
+    localStorage.removeItem("role");
+    localStorage.removeItem("expiresIn");
+    dispatch({
+      type: AUTH_LOGOUT,
+      payload: null,
+    });
+    await sessionLogout();
+  } catch (error) {
+    console.log(error);
+  }
 };
 export const checkAuthTimeout = (expirationTime) => {
   return (dispatch) => {
-    setTimeout(() => {
+    setTimeout(async () => {
       dispatch(logout());
     }, expirationTime);
   };
@@ -138,15 +142,14 @@ export const auth = (email, password, isSignup, isGoogleLogin, url) => {
     }
   };
 };
-
 export const authCheckLogin = () => {
   return (dispatch) => {
     const _id = localStorage.getItem("_id");
-    if (!_id) dispatch(logout());
-    else {
+    if (_id) {
       const expirationTime = localStorage.getItem("expiresIn");
-      if (expirationTime - Date.now() < 0) dispatch(logout());
-      else {
+      if (expirationTime - Date.now() < 0) {
+        dispatch(logout(expirationTime));
+      } else {
         const _id = localStorage.getItem("_id");
         const email = localStorage.getItem("email");
         const name = localStorage.getItem("name");
@@ -167,3 +170,7 @@ export const authCheckLogin = () => {
     }
   };
 };
+
+// ấn logout => call sesion
+// khi F5 => không cần call
+//  hết hạn expired

@@ -1,26 +1,26 @@
 const { get, post, remove, update } = require("./axiosClient");
 
-export const getProducts = async (query) => {
-  return await get(`/product/list`, { ...query });
+export const getProducts = (query) => {
+  return get(`/product/list`, { ...query });
 };
-export const getProduct = async (slug) => {
-  return await get(`/product/${slug}`);
-};
-
-export const postProduct = async (data) => {
-  return await post("/product", data);
+export const getProduct = (slug) => {
+  return get(`/product/${slug}`);
 };
 
-export const deleteProduct = async (slug) => {
-  return await remove(`/product/${slug}`);
+export const postProduct = (data) => {
+  return post("/product", data);
 };
 
-export const updateProduct = async (slug, data) => {
-  return await update(`/product/${slug}`, data);
+export const deleteProduct = (slug) => {
+  return remove(`/product/${slug}`);
 };
 
-export const ratingProduct = async (id, data) => {
-  return await update(`/product/rating/${id}`, data);
+export const updateProduct = (slug, data) => {
+  return update(`/product/${slug}`, data);
+};
+
+export const ratingProduct = (id, data) => {
+  return update(`/product/rating/${id}`, data);
 };
 
 export const getRelated = (slug) => {

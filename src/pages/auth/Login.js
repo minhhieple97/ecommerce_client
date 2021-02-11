@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Button } from "antd";
+import { Alert, Button, Spin } from "antd";
 import { GoogleOutlined, MailOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
@@ -87,29 +87,39 @@ const Login = () => {
   );
   return (
     <div className="container p-5">
-      <div className="col-md-6 offset-md-3">
-        <h4>Login</h4>
-        {loginForm()}
-        <Button
-          onClick={handleGoogleLogin}
-          type="danger"
-          loading={loadingGoogle}
-          disabled={loadingGoogle || loading}
-          className="mb-3"
-          block
-          shape="round"
-          icon={<GoogleOutlined />}
-          size="large"
-        >
-          Login with Goolgle
-        </Button>
-        <MyLink
-          loading={loading || loadingGoogle}
-          to="/forgot/password"
-          className="float-right text-danger"
-          text="Forgot Password"
-        ></MyLink>
-      </div>
+      <Spin spinning={loading || loadingGoogle}>
+        <Alert
+          style={{ border: "none" }}
+          type="info"
+          message={
+            <>
+              <div className="col-md-6 offset-md-3">
+                <h4>Login</h4>
+                {loginForm()}
+                <Button
+                  onClick={handleGoogleLogin}
+                  type="danger"
+                  loading={loadingGoogle}
+                  disabled={loadingGoogle || loading}
+                  className="mb-3"
+                  block
+                  shape="round"
+                  icon={<GoogleOutlined />}
+                  size="large"
+                >
+                  Login with Goolgle
+                </Button>
+                <MyLink
+                  loading={loading || loadingGoogle}
+                  to="/forgot/password"
+                  className="float-right text-danger"
+                  text="Forgot Password"
+                ></MyLink>
+              </div>
+            </>
+          }
+        ></Alert>
+      </Spin>
     </div>
   );
 };
