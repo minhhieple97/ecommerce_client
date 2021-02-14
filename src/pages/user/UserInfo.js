@@ -1,21 +1,13 @@
 import React, { useState } from "react";
 import { Button, Card, Cascader, Tooltip } from "antd";
-import { toast } from "react-toastify";
-import { auth } from "../../firebase";
+// import { toast } from "react-toastify";
+// import { auth } from "../../firebase";
 import { Form, Input, InputNumber, Select } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { useEffect } from "react";
 import { getCities, getDistricts, getWards } from "../../services/api/address";
-import { transformCascader, transformCascaderLeaf } from '../../ultil/helper'
+import { transformCascader, transformCascaderLeaf } from "../../ultil/helper";
 const { Option } = Select;
-const layout = {
-  labelCol: {
-    span: 8,
-  },
-  wrapperCol: {
-    span: 16,
-  },
-};
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -38,50 +30,16 @@ const tailFormItemLayout = {
     },
   },
 };
-const validateMessages = {
-  required: "${label} is required!",
-  types: {
-    email: "${label} is not a valid email!",
-    number: "${label} is not a valid number!",
-  },
-  number: {
-    range: "${label} must be between ${min} and ${max}",
-  },
-};
-const residences = [
-  {
-    value: 'zhejiang',
-    label: 'Zhejiang',
-    children: [
-      {
-        value: 'hangzhou',
-        label: 'Hangzhou',
-        children: [
-          {
-            value: 'xihu',
-            label: 'West Lake',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    value: 'jiangsu',
-    label: 'Jiangsu',
-    children: [
-      {
-        value: 'nanjing',
-        label: 'Nanjing',
-        children: [
-          {
-            value: 'zhonghuamen',
-            label: 'Zhong Hua Men',
-          },
-        ],
-      },
-    ],
-  },
-];
+// const validateMessages = {
+//   required: `${label} is required!`,
+//   types: {
+//     email: "${label} is not a valid email!",
+//     number: "${label} is not a valid number!",
+//   },
+//   number: {
+//     range: "${label} must be between ${min} and ${max}",
+//   },
+// };
 const prefixSelector = (
   <Form.Item name="prefix" noStyle>
     <Select defaultValue="+84" style={{ width: 70 }}>
@@ -90,8 +48,8 @@ const prefixSelector = (
   </Form.Item>
 );
 const UserInfo = () => {
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  // const [password] = useState("");
+  // const [loading, setLoading] = useState(false);
   const [cities, setCities] = useState(null);
   const [form] = Form.useForm();
 
@@ -105,19 +63,23 @@ const UserInfo = () => {
       switch (selectedOptions.length) {
         case 1:
           (async () => {
-            const { districts } = await getDistricts({ cityCode: targetOption.value });
+            const { districts } = await getDistricts({
+              cityCode: targetOption.value,
+            });
             targetOption.children = transformCascaderLeaf(districts);
             targetOption.loading = false;
             setCities([...cities]);
-          })()
+          })();
           break;
         case 2:
           (async () => {
-            const { wards } = await getWards({ districtCode: targetOption.value });
+            const { wards } = await getWards({
+              districtCode: targetOption.value,
+            });
             targetOption.children = transformCascader(wards);
             targetOption.loading = false;
             setCities([...cities]);
-          })()
+          })();
           break;
         default:
           break;
@@ -128,44 +90,42 @@ const UserInfo = () => {
   useEffect(() => {
     const _getCities = async () => {
       const { cities } = await getCities();
-      const transformCities = transformCascaderLeaf(cities)
-      setCities(transformCities)
-    }
-    _getCities()
-  }, [])
-
+      const transformCities = transformCascaderLeaf(cities);
+      setCities(transformCities);
+    };
+    _getCities();
+  }, []);
 
   const onFinish = (values) => {
-    console.log('Received values of form: ', values);
+    console.log("Received values of form: ", values);
   };
-  const handleSubmit = async () => {
-    try {
-      if (!password || password.length < 6) {
-        throw new Error("Password must be 6 characters or more.");
-      }
-      setLoading(true);
-      await auth.currentUser.updatePassword(password);
-      setLoading(false);
-      toast.success("Password successfully updated.");
-    } catch (error) {
-      setLoading(false);
-      toast.error(error.message);
-    }
-  };
-
+  // const handleSubmit = async () => {
+  //   try {
+  //     if (!password || password.length < 6) {
+  //       throw new Error("Password must be 6 characters or more.");
+  //     }
+  //     setLoading(true);
+  //     await auth.currentUser.updatePassword(password);
+  //     setLoading(false);
+  //     toast.success("Password successfully updated.");
+  //   } catch (error) {
+  //     setLoading(false);
+  //     toast.error(error.message);
+  //   }
+  // };
 
   return (
     <Card>
       <Form
         {...formItemLayout}
-        validateMessages={validateMessages}
+        // validateMessages={validateMessages}
         form={form}
         name="user-info"
         onFinish={onFinish}
         initialValues={{
-          home: ['City', 'District', 'Ward'],
-          work_place: ['City', 'District', 'Ward'],
-          prefix: '+84',
+          home: ["City", "District", "Ward"],
+          work_place: ["City", "District", "Ward"],
+          prefix: "+84",
         }}
         scrollToFirstError
       >
@@ -186,21 +146,29 @@ const UserInfo = () => {
         <Form.Item
           name="phone"
           label="Phone number"
-          rules={[{ required: true, message: 'Please input your phone number!' }]}
+          rules={[
+            { required: true, message: "Please input your phone number!" },
+          ]}
         >
-          <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
+          <Input addonBefore={prefixSelector} style={{ width: "100%" }} />
         </Form.Item>
-        <Form.Item
-          name="home"
-          label="Home"
-        >
-          <Cascader options={cities} onChange={onChange} loadData={loadData} changeOnSelect placeholder="Please enter your home address." />
+        <Form.Item name="home" label="Home">
+          <Cascader
+            options={cities}
+            onChange={onChange}
+            loadData={loadData}
+            changeOnSelect
+            placeholder="Please enter your home address."
+          />
         </Form.Item>
-        <Form.Item
-          name="work_place"
-          label="Work place"
-        >
-          <Cascader options={cities} onChange={onChange} loadData={loadData} changeOnSelect placeholder="Please enter your workplace's address." />
+        <Form.Item name="work_place" label="Work place">
+          <Cascader
+            options={cities}
+            onChange={onChange}
+            loadData={loadData}
+            changeOnSelect
+            placeholder="Please enter your workplace's address."
+          />
         </Form.Item>
         <Form.Item
           name="age"
@@ -215,7 +183,7 @@ const UserInfo = () => {
         >
           <InputNumber />
         </Form.Item>
-        <Form.Item  {...tailFormItemLayout} >
+        <Form.Item {...tailFormItemLayout}>
           <Button type="primary" htmlType="submit">
             Submit
           </Button>

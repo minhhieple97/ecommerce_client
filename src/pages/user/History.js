@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import UserNav from "../../components/nav/UserNav";
 import { toast } from "react-toastify";
 import { getOrders } from "../../services/api/user";
 import Spinner from "../../components/Spinner";
@@ -93,19 +92,10 @@ const History = () => {
         <Spinner></Spinner>
       ) : (
         <>
-          <div className="row">
-            <div className="col-md-2">
-              <UserNav></UserNav>
-            </div>
-            <div className="col-md-10 text-center">
-              <h4 style={{ marginTop: "10px" }}>
-                {orders.length > 0
-                  ? "User purchase orders"
-                  : "No purchase orders"}
-              </h4>
-              {showPurchaseOrders()}
-            </div>
-          </div>
+          <h4 style={{ marginTop: "10px" }}>
+            {orders.length > 0 ? "User purchase orders" : "No purchase orders"}
+          </h4>
+          {showPurchaseOrders()}
         </>
       )}
     </div>
