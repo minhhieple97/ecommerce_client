@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { authCheckLogin } from "./store/actions";
 import NotFoundPage from "./components/NotFoundPage";
+import ErrorBoundary from "./components/error-handing/ErrorBoundary";
 import { LoadingOutlined } from "@ant-design/icons";
 // use lazy
 const Login = lazy(() => import("./pages/auth/Login"));
@@ -55,89 +56,229 @@ const App = () => {
       <Draw></Draw>
       <ToastContainer></ToastContainer>
       <Switch>
-        <Route path="/" exact component={Home}></Route>
-        <Route exact path="/login" component={Login}></Route>
-        <Route exact path="/register" component={Register}></Route>
+        <Route
+          path="/"
+          exact
+          component={(props) => (
+            <ErrorBoundary>
+              <Home {...props}></Home>
+            </ErrorBoundary>
+          )}
+        ></Route>
+        <Route
+          exact
+          path="/login"
+          component={(props) => (
+            <ErrorBoundary>
+              <Login {...props}></Login>
+            </ErrorBoundary>
+          )}
+        ></Route>
+        <Route
+          exact
+          path="/register"
+          component={(props) => (
+            <ErrorBoundary>
+              <Register {...props}></Register>
+            </ErrorBoundary>
+          )}
+        ></Route>
         <Route
           exact
           path="/register/complete"
-          component={RegisterComplete}
+          component={(props) => (
+            <ErrorBoundary>
+              <RegisterComplete {...props}></RegisterComplete>
+            </ErrorBoundary>
+          )}
         ></Route>
-        <Route exact path="/forgot/password" component={ForgotPassword}></Route>
-        <Route path="/product/:slug" exact component={Product}></Route>
+        <Route
+          exact
+          path="/forgot/password"
+          component={(props) => (
+            <ErrorBoundary>
+              <ForgotPassword {...props}></ForgotPassword>
+            </ErrorBoundary>
+          )}
+        ></Route>
+        <Route
+          path="/product/:slug"
+          exact
+          component={(props) => (
+            <ErrorBoundary>
+              <Product {...props}></Product>
+            </ErrorBoundary>
+          )}
+        ></Route>
         <UserRoute
           exact
           path="/user/history"
-          component={() => <Dashboard keyDefault="1"></Dashboard>}
+          component={(props) => (
+            <ErrorBoundary {...props}>
+              <Dashboard keyDefault="1"></Dashboard>
+            </ErrorBoundary>
+          )}
         />
         <UserRoute
           exact
           path="/user/user-info"
-          component={() => <Dashboard keyDefault="2"></Dashboard>}
+          component={(props) => (
+            <ErrorBoundary>
+              <Dashboard {...props} keyDefault="2"></Dashboard>
+            </ErrorBoundary>
+          )}
         />
         <UserRoute
           exact
           path="/user/wishlist"
-          component={() => <Dashboard keyDefault="3"></Dashboard>}
+          component={(props) => (
+            <ErrorBoundary>
+              <Dashboard {...props} keyDefault="3"></Dashboard>
+            </ErrorBoundary>
+          )}
         />
         <AdminRoute
           exact
           path="/admin/dashboard"
-          component={AdminDashboard}
+          component={(props) => (
+            <ErrorBoundary>
+              <AdminDashboard {...props}></AdminDashboard>
+            </ErrorBoundary>
+          )}
         ></AdminRoute>
 
         <AdminRoute
           exact
           path="/admin/category"
-          component={CategoryCreate}
+          component={(props) => (
+            <ErrorBoundary>
+              <CategoryCreate {...props}></CategoryCreate>
+            </ErrorBoundary>
+          )}
         ></AdminRoute>
         <AdminRoute
           exact
           path="/admin/category/:slug"
-          component={CategoryUpdate}
+          component={(props) => (
+            <ErrorBoundary>
+              <CategoryUpdate {...props}></CategoryUpdate>
+            </ErrorBoundary>
+          )}
         ></AdminRoute>
         <AdminRoute
           exact
           path="/admin/sub-category"
-          component={SubCreate}
+          component={(props) => (
+            <ErrorBoundary>
+              <SubCreate {...props}></SubCreate>
+            </ErrorBoundary>
+          )}
         ></AdminRoute>
         <AdminRoute
           exact
           path="/admin/sub-category/:slug"
-          component={SubUpdate}
+          component={(props) => (
+            <ErrorBoundary>
+              <SubUpdate {...props}></SubUpdate>
+            </ErrorBoundary>
+          )}
         ></AdminRoute>
         <AdminRoute
           exact
           path="/admin/product"
-          component={ProductCreate}
+          component={(props) => (
+            <ErrorBoundary>
+              <ProductCreate {...props}></ProductCreate>
+            </ErrorBoundary>
+          )}
         ></AdminRoute>
         <AdminRoute
           exact
           path="/admin/product/list"
-          component={ProductsAdmin}
+          component={(props) => (
+            <ErrorBoundary>
+              <ProductsAdmin {...props}></ProductsAdmin>
+            </ErrorBoundary>
+          )}
         ></AdminRoute>
 
-        <Route path="/category/:slug" exact component={CategoryHome}></Route>
+        <Route
+          path="/category/:slug"
+          exact
+          component={(props) => (
+            <ErrorBoundary>
+              <CategoryHome {...props}></CategoryHome>
+            </ErrorBoundary>
+          )}
+        ></Route>
 
-        <Route path="/sub-category/:slug" exact component={SubHome}></Route>
+        <Route
+          path="/sub-category/:slug"
+          exact
+          component={(props) => (
+            <ErrorBoundary>
+              <SubHome {...props}></SubHome>
+            </ErrorBoundary>
+          )}
+        ></Route>
 
-        <Route path="/shop" exact component={Shop}></Route>
+        <Route
+          path="/shop"
+          exact
+          component={(props) => (
+            <ErrorBoundary>
+              <Shop {...props}></Shop>
+            </ErrorBoundary>
+          )}
+        ></Route>
 
-        <UserRoute exact path="/checkout" component={Checkout} />
+        <UserRoute
+          exact
+          path="/checkout"
+          component={(props) => (
+            <ErrorBoundary>
+              <Checkout {...props}></Checkout>
+            </ErrorBoundary>
+          )}
+        />
 
-        <UserRoute exact path="/payment" component={Payment} />
+        <UserRoute
+          exact
+          path="/payment"
+          component={(props) => (
+            <ErrorBoundary>
+              <Payment {...props}></Payment>
+            </ErrorBoundary>
+          )}
+        />
 
         <AdminRoute
           exact
           path="/admin/product/:slug"
-          component={ProductUpdate}
+          component={(props) => (
+            <ErrorBoundary>
+              <ProductUpdate {...props}></ProductUpdate>
+            </ErrorBoundary>
+          )}
         ></AdminRoute>
         <AdminRoute
           exact
           path="/admin/coupon"
-          component={CreateCoupon}
+          component={(props) => (
+            <ErrorBoundary>
+              <CreateCoupon {...props}></CreateCoupon>
+            </ErrorBoundary>
+          )}
         ></AdminRoute>
-        <Route path="/cart" exact component={Cart}></Route>
+        <Route
+          path="/cart"
+          exact
+          component={(props) => (
+            <ErrorBoundary>
+              <Cart {...props}></Cart>
+            </ErrorBoundary>
+          )}
+        ></Route>
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </Suspense>
