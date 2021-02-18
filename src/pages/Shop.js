@@ -12,13 +12,13 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import BrandList from "../components/brand/BrandList";
+import LoadingCard from "../components/cards/LoadingCard";
 import CategoryCheckBox from "../components/category/CategoryCheckBox";
 import ColorList from "../components/color/ColorList";
 import Star from "../components/forms/Star";
 import PaginationList from "../components/PaginationList";
 import ProductList from "../components/product/ProductList";
 import ShippingsCheckbox from "../components/shipping/ShippingsCheckbox";
-import Spinner from "../components/Spinner";
 import SubsLabel from "../components/sub/SubsLabel";
 import { getCategories } from "../services/api/category";
 import { getProducts } from "../services/api/product";
@@ -31,7 +31,7 @@ const Shop = () => {
     products: [],
     page: 1,
     totalPages: 0,
-    limit: 2
+    limit: 6,
   });
   const [loading, setLoading] = useState(false);
   const [prices, setPrices] = useState([0, 0]);
@@ -52,8 +52,7 @@ const Shop = () => {
   const _getProducts = useCallback(
     async (value) => {
       try {
-        const { limit, page } = productsData
-        const query = { limit, page };
+        const query = { limit: value.limit, page: value.page };
         if ("name" in value && value.name.trim()) {
           query.name = value.name;
         }
@@ -79,8 +78,18 @@ const Shop = () => {
         if ("shipping" in value && value.shipping) {
           query.shipping = value.shipping;
         }
-        const { products, totalPages: newTotalPages, page: newPage, limit: newLimit } = await getProducts(query);
-        setProductsData({ products, totalPages: newTotalPages, page: newPage, limit: newLimit });
+        const {
+          products,
+          totalPages: newTotalPages,
+          page: newPage,
+          limit: newLimit,
+        } = await getProducts(query);
+        setProductsData({
+          products,
+          totalPages: newTotalPages,
+          page: newPage,
+          limit: newLimit,
+        });
         setLoading(false);
       } catch (error) {
         setLoading(false);
@@ -88,7 +97,7 @@ const Shop = () => {
           products: [],
           page: 1,
           totalPages: 0,
-          limit: 2
+          limit: 6,
         });
         toast.error(error.message);
       }
@@ -107,6 +116,47 @@ const Shop = () => {
       toast.error(error.message);
     }
   };
+  useEffect(() => {
+    _getCategories();
+    return () => dispatch(searchQuery(""));
+    // eslint-disable-next-line
+  }, []);
+  useEffect(() => {
+    setLoading(true);
+    let time = 0;
+    if (firstRender.current) {
+      firstRender.current = false;
+    } else {
+      time = 0;
+    }
+    // const timeout = setTimeout(() => {
+    _getProducts({
+      name: text,
+      prices,
+      categoryIds,
+      star,
+      sub,
+      brand,
+      color,
+      shipping,
+      page: productsData.page,
+      limit: productsData.limit,
+    });
+    // }, time);
+    // return () => clearTimeout(timeout);
+  }, [
+    text,
+    _getProducts,
+    prices,
+    categoryIds,
+    star,
+    sub,
+    brand,
+    color,
+    shipping,
+    productsData.page,
+    productsData.limit,
+  ]);
   const handleOnChangeCheckBox = (e) => {
     const categoryIdsObj = { [e.target.name]: e.target.checked };
     const newCategoryIds = [...categoryIds].filter(
@@ -143,46 +193,6 @@ const Shop = () => {
   const handleOnchangePrice = (val) => {
     setPrices(val);
   };
-  useEffect(() => {
-    _getCategories();
-    return () => dispatch(searchQuery(""));
-    // eslint-disable-next-line
-  }, []);
-  useEffect(() => {
-    setLoading(true);
-    let time = 0;
-    if (firstRender.current) {
-      firstRender.current = false;
-    }
-    else {
-      time = 2000
-    }
-    const timeout = setTimeout(() => {
-      _getProducts({
-        name: text,
-        prices,
-        categoryIds,
-        star,
-        sub,
-        brand,
-        color,
-        shipping,
-
-      });
-    }, time);
-    return () => clearTimeout(timeout);
-  }, [
-    text,
-    _getProducts,
-    prices,
-    categoryIds,
-    star,
-    sub,
-    brand,
-    color,
-    shipping,
-    productsData.page
-  ]);
   const handleStarClick = (num) => {
     setStar(num);
     setAllRatings(false);
@@ -204,7 +214,7 @@ const Shop = () => {
     if (e.target.checked) setSub("");
   };
   const handleOnChangePage = (page) => {
-    setProductsData((state) => ({ ...state, page }))
+    setProductsData({ ...productsData, page });
   };
   return (
     <div className="container-fluid">
@@ -295,9 +305,7 @@ const Shop = () => {
                 </span>
               }
             >
-              <div
-                className="pl-4 pr-4"
-              >
+              <div className="pl-4 pr-4">
                 {
                   <>
                     <Checkbox
@@ -378,26 +386,26 @@ const Shop = () => {
         </div>
         <div className="col-md-9 pt-3">
           {loading ? (
-            <Spinner></Spinner>
+            <LoadingCard count={6}></LoadingCard>
           ) : (
-              <>
-                <h4>Products</h4>
-                {productsData.products.length < 1 && (
-                  <h4 className="text-center">We could not find any products.</h4>
-                )}
-                <div className="row pb-5">
-                  <ProductList products={productsData.products}></ProductList>
-                </div>
-                <div className="row offset-md-4 pt-5 p-3">
-                  <PaginationList
-                    handleOnChange={handleOnChangePage}
-                    page={productsData.page}
-                    totalPages={productsData.totalPages}
-                    simple={false}
-                  />
-                </div>
-              </>
-            )}
+            <>
+              <h4>Products</h4>
+              {productsData.products.length < 1 && (
+                <h4 className="text-center">We could not find any products.</h4>
+              )}
+              <div className="row pb-5">
+                <ProductList products={productsData.products}></ProductList>
+              </div>
+            </>
+          )}
+          <div className="row offset-md-4 pt-5 p-3">
+            <PaginationList
+              handleOnChange={handleOnChangePage}
+              page={productsData.page}
+              totalPages={productsData.totalPages}
+              simple={false}
+            />
+          </div>
         </div>
       </div>
     </div>
