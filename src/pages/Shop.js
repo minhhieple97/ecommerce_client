@@ -84,7 +84,12 @@ const Shop = () => {
         setLoading(false);
       } catch (error) {
         setLoading(false);
-        // setProducts([]);
+        setProductsData({
+          products: [],
+          page: 1,
+          totalPages: 0,
+          limit: 2
+        });
         toast.error(error.message);
       }
     },
