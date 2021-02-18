@@ -8,13 +8,14 @@ import {
 } from "@ant-design/icons";
 import { Checkbox, Menu, Slider } from "antd";
 import SubMenu from "antd/lib/menu/SubMenu";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import BrandList from "../components/brand/BrandList";
 import CategoryCheckBox from "../components/category/CategoryCheckBox";
 import ColorList from "../components/color/ColorList";
 import Star from "../components/forms/Star";
+import PaginationList from "../components/PaginationList";
 import ProductList from "../components/product/ProductList";
 import ShippingsCheckbox from "../components/shipping/ShippingsCheckbox";
 import Spinner from "../components/Spinner";
@@ -25,7 +26,13 @@ import { getSubs } from "../services/api/sub";
 import { searchQuery } from "../store/actions";
 import { ENUM_BRANDS, ENUM_COLORS } from "../ultil/constants";
 const Shop = () => {
-  const [products, setProducts] = useState([]);
+  const firstRender = useRef(true);
+  const [productsData, setProductsData] = useState({
+    products: [],
+    page: 1,
+    totalPages: 0,
+    limit: 2
+  });
   const [loading, setLoading] = useState(false);
   const [prices, setPrices] = useState([0, 0]);
   const [categories, setCategories] = useState([]);
@@ -45,7 +52,8 @@ const Shop = () => {
   const _getProducts = useCallback(
     async (value) => {
       try {
-        const query = { limit: 10, page: 1 };
+        const { limit, page } = productsData
+        const query = { limit, page };
         if ("name" in value && value.name.trim()) {
           query.name = value.name;
         }
@@ -71,13 +79,12 @@ const Shop = () => {
         if ("shipping" in value && value.shipping) {
           query.shipping = value.shipping;
         }
-
-        const { products } = await getProducts(query);
-        setProducts(products);
+        const { products, totalPages: newTotalPages, page: newPage, limit: newLimit } = await getProducts(query);
+        setProductsData({ products, totalPages: newTotalPages, page: newPage, limit: newLimit });
         setLoading(false);
       } catch (error) {
         setLoading(false);
-        setProducts([]);
+        // setProducts([]);
         toast.error(error.message);
       }
     },
@@ -134,9 +141,17 @@ const Shop = () => {
   useEffect(() => {
     _getCategories();
     return () => dispatch(searchQuery(""));
-  }, [dispatch]);
+    // eslint-disable-next-line
+  }, []);
   useEffect(() => {
     setLoading(true);
+    let time = 0;
+    if (firstRender.current) {
+      firstRender.current = false;
+    }
+    else {
+      time = 2000
+    }
     const timeout = setTimeout(() => {
       _getProducts({
         name: text,
@@ -147,8 +162,9 @@ const Shop = () => {
         brand,
         color,
         shipping,
+
       });
-    }, 2000);
+    }, time);
     return () => clearTimeout(timeout);
   }, [
     text,
@@ -160,6 +176,7 @@ const Shop = () => {
     brand,
     color,
     shipping,
+    productsData.page
   ]);
   const handleStarClick = (num) => {
     setStar(num);
@@ -181,7 +198,9 @@ const Shop = () => {
     setAllSubs(e.target.checked);
     if (e.target.checked) setSub("");
   };
-
+  const handleOnChangePage = (page) => {
+    setProductsData((state) => ({ ...state, page }))
+  };
   return (
     <div className="container-fluid">
       <div className="row">
@@ -272,7 +291,6 @@ const Shop = () => {
               }
             >
               <div
-                // style={{ marginTop: "-10px" }}
                 className="pl-4 pr-4"
               >
                 {
@@ -357,16 +375,24 @@ const Shop = () => {
           {loading ? (
             <Spinner></Spinner>
           ) : (
-            <>
-              <h4>Products</h4>
-              {products.length < 1 && (
-                <h4 className="text-center">No products found</h4>
-              )}
-              <div className="row pb-5">
-                <ProductList products={products}></ProductList>
-              </div>
-            </>
-          )}
+              <>
+                <h4>Products</h4>
+                {productsData.products.length < 1 && (
+                  <h4 className="text-center">We could not find any products.</h4>
+                )}
+                <div className="row pb-5">
+                  <ProductList products={productsData.products}></ProductList>
+                </div>
+                <div className="row offset-md-4 pt-5 p-3">
+                  <PaginationList
+                    handleOnChange={handleOnChangePage}
+                    page={productsData.page}
+                    totalPages={productsData.totalPages}
+                    simple={false}
+                  />
+                </div>
+              </>
+            )}
         </div>
       </div>
     </div>

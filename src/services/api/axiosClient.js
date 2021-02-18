@@ -8,15 +8,7 @@ const axiosInstance = axios.create({
   headers: { "Content-Type": "application/json" },
   paramsSerializer: (params) => queryString.stringify(params),
 });
-// const getCookies = () =>
-//   document.cookie.split(";").reduce((cookies, item) => {
-//     const [name, value] = item.split("=");
-//     cookies[name] = value;
-//     return cookies;
-//   }, {});
 axiosInstance.interceptors.request.use(async (config) => {
-  // const xsrfToken = getCookies()["xsrfToken"];
-  // if (xsrfToken) config.headers["X-XSRF-TOKEN"] = xsrfToken;
   return config;
 });
 axiosInstance.interceptors.response.use(
