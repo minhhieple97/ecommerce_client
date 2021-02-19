@@ -8,8 +8,9 @@ import {
 } from "@ant-design/icons";
 import { Checkbox, Menu, Slider } from "antd";
 import SubMenu from "antd/lib/menu/SubMenu";
-import React, { useCallback, useEffect, useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useCallback, useEffect, useState } from "react";
+import { useRef } from "react";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import BrandList from "../components/brand/BrandList";
 import LoadingCard from "../components/cards/LoadingCard";
@@ -23,14 +24,12 @@ import SubsLabel from "../components/sub/SubsLabel";
 import { getCategories } from "../services/api/category";
 import { getProducts } from "../services/api/product";
 import { getSubs } from "../services/api/sub";
-import { searchQuery } from "../store/actions";
 import { ENUM_BRANDS, ENUM_COLORS } from "../ultil/constants";
 const Shop = () => {
-  const firstRender = useRef(true);
   const [productsData, setProductsData] = useState({
     products: [],
     page: 1,
-    totalPages: 0,
+    totalPages: 3,
     limit: 6,
   });
   const [loading, setLoading] = useState(false);
@@ -48,11 +47,11 @@ const Shop = () => {
   const [sub, setSub] = useState("");
   const [allRatings, setAllRatings] = useState(true);
   const [allSubs, setAllSubs] = useState(true);
-  const dispatch = useDispatch();
+  const firstRender = useRef(true);
   const _getProducts = useCallback(
     async (value) => {
       try {
-        const query = { limit: value.limit, page: value.page };
+        const query = { limit: value.limit || 6, page: value.page || 1 };
         if ("name" in value && value.name.trim()) {
           query.name = value.name;
         }
@@ -102,7 +101,8 @@ const Shop = () => {
         toast.error(error.message);
       }
     },
-    [prices, categoryIds]
+    // eslint-disable-next-line
+    []
   );
   const _getCategories = async () => {
     try {
@@ -118,36 +118,30 @@ const Shop = () => {
   };
   useEffect(() => {
     _getCategories();
-    return () => dispatch(searchQuery(""));
     // eslint-disable-next-line
   }, []);
   useEffect(() => {
-    setLoading(true);
-    let time = 0;
-    if (firstRender.current) {
-      firstRender.current = false;
-    } else {
-      time = 0;
+    let isCancelled = false;
+    setLoading(true)
+    if (!isCancelled) {
+      _getProducts({
+        name: text,
+        categoryIds,
+        star,
+        sub,
+        brand,
+        color,
+        shipping,
+        page: productsData.page,
+        limit: productsData.limit,
+      });
     }
-    // const timeout = setTimeout(() => {
-    _getProducts({
-      name: text,
-      prices,
-      categoryIds,
-      star,
-      sub,
-      brand,
-      color,
-      shipping,
-      page: productsData.page,
-      limit: productsData.limit,
-    });
-    // }, time);
-    // return () => clearTimeout(timeout);
+    return () => {
+      isCancelled = true;
+    }
+    // eslint-disable-next-line
   }, [
-    text,
     _getProducts,
-    prices,
     categoryIds,
     star,
     sub,
@@ -157,6 +151,34 @@ const Shop = () => {
     productsData.page,
     productsData.limit,
   ]);
+
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false
+    }
+    else {
+      setLoading(true);
+      let isCancelled = false
+      if (!isCancelled) {
+        const timeout = setTimeout(() => {
+          _getProducts({
+            name: text,
+            prices,
+          })
+        }, 1000);
+        return () => {
+          isCancelled = true;
+          clearTimeout(timeout)
+        }
+      }
+
+    }
+  }, [
+    text,
+    _getProducts,
+    prices,
+  ]);
+
   const handleOnChangeCheckBox = (e) => {
     const categoryIdsObj = { [e.target.name]: e.target.checked };
     const newCategoryIds = [...categoryIds].filter(
@@ -388,24 +410,25 @@ const Shop = () => {
           {loading ? (
             <LoadingCard count={6}></LoadingCard>
           ) : (
-            <>
-              <h4>Products</h4>
-              {productsData.products.length < 1 && (
-                <h4 className="text-center">We could not find any products.</h4>
-              )}
-              <div className="row pb-5">
-                <ProductList products={productsData.products}></ProductList>
-              </div>
-            </>
-          )}
-          <div className="row offset-md-4 pt-5 p-3">
+              <>
+                {productsData.products.length < 1 && (
+                  <h4 className="text-center">We could not find any products.</h4>
+                )}
+
+                <div className="row pb-5">
+                  <ProductList products={productsData.products}></ProductList>
+                </div>
+              </>
+            )}
+          {productsData.products.length > 0 && <div className="row offset-md-4 pt-5 p-3">
             <PaginationList
               handleOnChange={handleOnChangePage}
               page={productsData.page}
               totalPages={productsData.totalPages}
               simple={false}
             />
-          </div>
+          </div>}
+
         </div>
       </div>
     </div>
